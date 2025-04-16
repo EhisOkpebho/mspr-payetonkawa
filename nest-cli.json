@@ -39,8 +39,5 @@
         "tsConfigPath": "libs/shared/tsconfig.lib.json"
       }
     }
-  },
-  "compilerOptions": {
-    "webpack": true
   }
 }
