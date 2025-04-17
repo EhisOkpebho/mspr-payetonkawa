@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  rabbitmq:
+  ptk_rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
+    container_name: ptk_rabbitmq
     ports:
       - '5672:5672'
       - '15672:15672'
@@ -13,5 +13,44 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
+  postgres_clients:
+    image: postgres:15
+    container_name: postgres_clients
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pg_clients_data:/var/lib/postgresql/data
+    ports:
+      - '5433:5432'
+
+  postgres_orders:
+    image: postgres:15
+    container_name: postgres_orders
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pg_orders_data:/var/lib/postgresql/data
+    ports:
+      - '5434:5432'
+
+  postgres_products:
+    image: postgres:15
+    container_name: postgres_products
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pg_products_data:/var/lib/postgresql/data
+    ports:
+      - '5435:5432'
+
 volumes:
   rabbitmq_data:
+  pg_clients_data:
+  pg_orders_data:
+  pg_products_data:
