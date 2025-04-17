@@ -13,15 +13,15 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
-  postgres_clients:
+  postgres_customers:
     image: postgres:15
-    container_name: postgres_clients
+    container_name: postgres_customers
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     volumes:
-      - pg_clients_data:/var/lib/postgresql/data
+      - pg_customers_data:/var/lib/postgresql/data
     ports:
       - '5433:5432'
 
@@ -51,6 +51,6 @@ services:
 
 volumes:
   rabbitmq_data:
-  pg_clients_data:
+  pg_customers_data:
   pg_orders_data:
   pg_products_data:

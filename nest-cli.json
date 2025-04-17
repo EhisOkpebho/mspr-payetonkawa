@@ -3,13 +3,13 @@
   "collection": "@nestjs/schematics",
   "monorepo": true,
   "projects": {
-    "api-clients": {
+    "api-customers": {
       "type": "application",
-      "root": "apps/api-clients",
+      "root": "apps/api-customers",
       "entryFile": "main",
-      "sourceRoot": "apps/api-clients/src",
+      "sourceRoot": "apps/api-customers/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/api-clients/tsconfig.app.json"
+        "tsConfigPath": "apps/api-customers/tsconfig.app.json"
       }
     },
     "api-orders": {

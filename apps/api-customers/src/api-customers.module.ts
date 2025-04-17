@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
-import { ApiClientsController } from './api-clients.controller'
-import { ApiClientsService } from './api-clients.service'
+import { ApiCustomersController } from './api-customers.controller'
+import { ApiCustomersService } from './api-customers.service'
 import { ConfigModule } from "@nestjs/config";
 import {TypeOrmModule} from "@nestjs/typeorm";
 
@@ -20,7 +20,7 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 			synchronize: true,
 		}),
 	],
-	controllers: [ApiClientsController],
-	providers: [ApiClientsService],
+	controllers: [ApiCustomersController],
+	providers: [ApiCustomersService],
 })
-export class ApiClientsModule {}
+export class ApiCustomersModule {}

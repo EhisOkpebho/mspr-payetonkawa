@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
-import { ApiClientsModule } from './api-clients.module'
+import { ApiCustomersModule } from './api-customers.module'
 
 async function bootstrap() {
-	const app = await NestFactory.create(ApiClientsModule);
+	const app = await NestFactory.create(ApiCustomersModule);
 
 	await app.listen(3000);
 

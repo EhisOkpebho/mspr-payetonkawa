@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import * as request from 'supertest'
-import { ApiClientsModule } from './../src/api-clients.module'
+import { ApiCustomersModule } from './../src/api-customers.module'
 
-describe('ApiClientsController (e2e)', () => {
+describe('ApiCustomersController (e2e)', () => {
 	let app: INestApplication
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
-			imports: [ApiClientsModule],
+			imports: [ApiCustomersModule],
 		}).compile()
 
 		app = moduleFixture.createNestApplication()
