@@ -1,10 +1,16 @@
 import {Order} from "@app/shared/entities/order.entity";
 import {Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany} from 'typeorm';
 
-@Entity('customers')
+@Entity()
 export class Customer {
     @PrimaryGeneratedColumn('identity')
     id: number;
+
+    @Column({ length: 100 })
+    name: string;
+
+    @Column({ length: 100 })
+    username: string;
 
     @Column({ length: 100 })
     firstName: string;
@@ -12,14 +18,14 @@ export class Customer {
     @Column({ length: 100 })
     lastName: string;
 
-    @Column({ unique: true })
-    email: string;
+    @Column('jsonb')
+    address: { postalCode: string; city: string };
 
-    @Column({ nullable: true })
-    phone: string;
+    @Column('jsonb')
+    profile: { firstName: string; lastName: string };
 
-    @Column({ nullable: true })
-    address: string;
+    @Column('jsonb')
+    company: { companyName: string };
 
     @OneToMany(() => Order, order => order.customer)
     orders: Order[];

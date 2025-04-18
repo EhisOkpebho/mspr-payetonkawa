@@ -20,7 +20,9 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 			entities: DECLARED_ENTITIES,
 			autoLoadEntities: true,
 			synchronize: true,
+			dropSchema: true,
 		}),
+		TypeOrmModule.forFeature(DECLARED_ENTITIES)
 	],
 	controllers: [ApiCustomersController],
 	providers: [ApiCustomersService],

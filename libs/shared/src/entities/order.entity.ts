@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Customer } from './customer.entity';
 
-@Entity('orders')
+@Entity()
 export class Order {
     @PrimaryGeneratedColumn('identity')
     id: number;
@@ -10,7 +10,7 @@ export class Order {
     @JoinColumn({ name: 'customerId' })
     customer: Customer;
 
-    @Column({ type: 'number' })
+    @Column({ type: 'int' })
     customerId: number;
 
     @CreateDateColumn()
