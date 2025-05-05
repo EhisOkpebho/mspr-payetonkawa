@@ -1,9 +1,9 @@
-import {Product} from "@app/shared/entities/product.entity";
+import { Product } from '@app/shared/entities/product.entity'
 import { Module } from '@nestjs/common'
 import { ApiProductsController } from './api-products.controller'
 import { ApiProductsService } from './api-products.service'
-import { ConfigModule } from "@nestjs/config";
-import {TypeOrmModule} from "@nestjs/typeorm";
+import { ConfigModule } from '@nestjs/config'
+import { TypeOrmModule } from '@nestjs/typeorm'
 
 @Module({
 	imports: [
@@ -21,7 +21,7 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 			autoLoadEntities: true,
 			synchronize: true,
 		}),
-		TypeOrmModule.forFeature([Product])
+		TypeOrmModule.forFeature([Product]),
 	],
 	controllers: [ApiProductsController],
 	providers: [ApiProductsService],

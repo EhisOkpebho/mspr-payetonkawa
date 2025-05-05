@@ -1,9 +1,9 @@
-import {Customer} from "@app/shared/entities/customer.entity";
+import { Customer } from '@app/shared/entities/customer.entity'
 import { Module } from '@nestjs/common'
 import { ApiCustomersController } from './api-customers.controller'
 import { ApiCustomersService } from './api-customers.service'
-import { ConfigModule } from "@nestjs/config";
-import {TypeOrmModule} from "@nestjs/typeorm";
+import { ConfigModule } from '@nestjs/config'
+import { TypeOrmModule } from '@nestjs/typeorm'
 
 @Module({
 	imports: [
@@ -22,7 +22,7 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 			synchronize: true,
 			dropSchema: true,
 		}),
-		TypeOrmModule.forFeature([Customer])
+		TypeOrmModule.forFeature([Customer]),
 	],
 	controllers: [ApiCustomersController],
 	providers: [ApiCustomersService],

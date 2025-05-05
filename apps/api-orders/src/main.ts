@@ -1,11 +1,11 @@
 import { NestFactory } from '@nestjs/core'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
-import { ApiOrdersModule } from "./api-orders.module";
+import { ApiOrdersModule } from './api-orders.module'
 
 async function bootstrap() {
-	const app = await NestFactory.create(ApiOrdersModule);
+	const app = await NestFactory.create(ApiOrdersModule)
 
-	await app.listen(3001);
+	await app.listen(3001)
 
 	app.connectMicroservice<MicroserviceOptions>({
 		transport: Transport.RMQ,
@@ -17,8 +17,8 @@ async function bootstrap() {
 				durable: false,
 			},
 		},
-	});
+	})
 
-	await app.startAllMicroservices();
+	await app.startAllMicroservices()
 }
 bootstrap()

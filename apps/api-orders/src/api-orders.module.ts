@@ -1,9 +1,9 @@
-import {Order} from "@app/shared/entities/order.entity";
+import { Order } from '@app/shared/entities/order.entity'
 import { Module } from '@nestjs/common'
 import { ApiOrdersController } from './api-orders.controller'
 import { ApiOrdersService } from './api-orders.service'
-import { ConfigModule } from "@nestjs/config";
-import {TypeOrmModule} from "@nestjs/typeorm";
+import { ConfigModule } from '@nestjs/config'
+import { TypeOrmModule } from '@nestjs/typeorm'
 
 @Module({
 	imports: [
@@ -21,7 +21,7 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 			autoLoadEntities: true,
 			synchronize: true,
 		}),
-		TypeOrmModule.forFeature([Order])
+		TypeOrmModule.forFeature([Order]),
 	],
 	controllers: [ApiOrdersController],
 	providers: [ApiOrdersService],

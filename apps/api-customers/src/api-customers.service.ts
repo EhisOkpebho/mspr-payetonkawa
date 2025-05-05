@@ -1,8 +1,8 @@
-import {Customer} from "@app/shared/entities/customer.entity";
-import {CreateCustomerDto, FindCustomerByIdDto, UpdateCustomerDto} from "@app/shared/types/dto/customer.dto";
+import { Customer } from '@app/shared/entities/customer.entity'
+import { CreateCustomerDto, FindCustomerByIdDto, UpdateCustomerDto } from '@app/shared/types/dto/customer.dto'
 import { Injectable } from '@nestjs/common'
-import {InjectRepository} from "@nestjs/typeorm";
-import {Repository} from "typeorm";
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
 
 @Injectable()
 export class ApiCustomersService {
@@ -29,7 +29,7 @@ export class ApiCustomersService {
 	}
 
 	async deleteCustomer({ id }: FindCustomerByIdDto): Promise<boolean> {
-		const res =  await this.customerRepository.delete(id)
+		const res = await this.customerRepository.delete(id)
 		return res.affected > 0
 	}
 }

@@ -1,5 +1,5 @@
-import {CreateCustomerDto} from "@app/shared/types/dto/customer.dto";
-import {Body, Controller, Delete, Get, Logger, Param, Post, Put} from '@nestjs/common'
+import { CreateCustomerDto } from '@app/shared/types/dto/customer.dto'
+import { Body, Controller, Delete, Get, Logger, Param, Post, Put } from '@nestjs/common'
 import { ApiCustomersService } from './api-customers.service'
 
 @Controller('customers')
