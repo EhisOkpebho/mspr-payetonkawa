@@ -1,14 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Customer } from './customer.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity()
 export class Order {
     @PrimaryGeneratedColumn('identity')
     id: number;
-
-    @ManyToOne(() => Customer, customer => customer.orders)
-    @JoinColumn({ name: 'customerId' })
-    customer: Customer;
 
     @Column({ type: 'int' })
     customerId: number;

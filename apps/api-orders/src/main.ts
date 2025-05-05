@@ -11,7 +11,8 @@ async function bootstrap() {
 		transport: Transport.RMQ,
 		options: {
 			urls: ['amqp://admin:admin@127.0.0.2:5672'],
-			queue: 'api_orders_queue',
+			// queue: 'api_orders_queue',
+			queue: 'default',
 			queueOptions: {
 				durable: false,
 			},

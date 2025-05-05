@@ -1,4 +1,4 @@
-import {DECLARED_ENTITIES} from "@app/shared/entities/utils";
+import {Customer} from "@app/shared/entities/customer.entity";
 import { Module } from '@nestjs/common'
 import { ApiCustomersController } from './api-customers.controller'
 import { ApiCustomersService } from './api-customers.service'
@@ -17,12 +17,12 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 			username: 'user',
 			password: 'password',
 			database: 'postgres',
-			entities: DECLARED_ENTITIES,
+			entities: [Customer],
 			autoLoadEntities: true,
 			synchronize: true,
 			dropSchema: true,
 		}),
-		TypeOrmModule.forFeature(DECLARED_ENTITIES)
+		TypeOrmModule.forFeature([Customer])
 	],
 	controllers: [ApiCustomersController],
 	providers: [ApiCustomersService],

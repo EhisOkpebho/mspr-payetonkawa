@@ -1,5 +1,4 @@
-import {Order} from "@app/shared/entities/order.entity";
-import {Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany} from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn} from 'typeorm';
 
 @Entity()
 export class Customer {
@@ -26,9 +25,6 @@ export class Customer {
 
     @Column('jsonb')
     company: { companyName: string };
-
-    @OneToMany(() => Order, order => order.customer)
-    orders: Order[];
 
     @CreateDateColumn()
     createdAt: Date;
