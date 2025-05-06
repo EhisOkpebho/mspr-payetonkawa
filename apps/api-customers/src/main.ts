@@ -5,7 +5,7 @@ import { ApiCustomersModule } from './api-customers.module'
 async function bootstrap() {
 	const app = await NestFactory.create(ApiCustomersModule)
 
-	await app.listen(3000)
+	await app.listen(3001)
 
 	app.connectMicroservice<MicroserviceOptions>({
 		transport: Transport.RMQ,

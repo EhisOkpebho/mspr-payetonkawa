@@ -11,46 +11,96 @@ services:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      - ptk_rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - ptk_network
 
-  postgres_customers:
+  ptk_postgres_customers:
     image: postgres:15
-    container_name: postgres_customers
+    container_name: ptk_postgres_customers
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     volumes:
-      - pg_customers_data:/var/lib/postgresql/data
+      - ptk_pg_customers_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    networks:
+      - ptk_network
+
+  ptk_postgres_orders:
+    image: postgres:15
+    container_name: ptk_postgres_orders
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ptk_pg_orders_data:/var/lib/postgresql/data
     ports:
       - '5433:5432'
+    networks:
+      - ptk_network
 
-  postgres_orders:
+  ptk_postgres_products:
     image: postgres:15
-    container_name: postgres_orders
+    container_name: ptk_postgres_products
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     volumes:
-      - pg_orders_data:/var/lib/postgresql/data
+      - ptk_pg_products_data:/var/lib/postgresql/data
     ports:
       - '5434:5432'
+    networks:
+      - ptk_network
 
-  postgres_products:
-    image: postgres:15
-    container_name: postgres_products
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-    volumes:
-      - pg_products_data:/var/lib/postgresql/data
+  ptk_api-customers:
+    build:
+      context: .
+      dockerfile: ./apps/api-customers/Dockerfile
+    container_name: ptk_api-customers
     ports:
-      - '5435:5432'
+      - '3001:3000'
+    depends_on:
+      - ptk_postgres_customers
+      - ptk_rabbitmq
+    networks:
+      - ptk_network
+
+  ptk_api-orders:
+    build:
+      context: .
+      dockerfile: ./apps/api-orders/Dockerfile
+    container_name: ptk_api-orders
+    ports:
+      - '3002:3000'
+    depends_on:
+      - ptk_postgres_orders
+      - ptk_rabbitmq
+    networks:
+      - ptk_network
+
+  ptk_api-products:
+    build:
+      context: .
+      dockerfile: ./apps/api-products/Dockerfile
+    container_name: ptk_api-products
+    ports:
+      - '3003:3000'
+    depends_on:
+      - ptk_postgres_products
+      - ptk_rabbitmq
+    networks:
+      - ptk_network
+
+networks:
+  ptk_network:
 
 volumes:
-  rabbitmq_data:
-  pg_customers_data:
-  pg_orders_data:
-  pg_products_data:
+  ptk_rabbitmq_data:
+  ptk_pg_customers_data:
+  ptk_pg_orders_data:
+  ptk_pg_products_data:
