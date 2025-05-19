@@ -10,7 +10,7 @@ async function bootstrap() {
 	app.connectMicroservice<MicroserviceOptions>({
 		transport: Transport.RMQ,
 		options: {
-			urls: ['amqp://admin:admin@127.0.0.2:5672'],
+			urls: ['amqp://admin:admin@localhost:5672'],
 			// queue: 'api_clients_queue',
 			queue: 'default',
 			queueOptions: {
@@ -21,4 +21,5 @@ async function bootstrap() {
 
 	await app.startAllMicroservices()
 }
+
 bootstrap()

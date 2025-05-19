@@ -24,6 +24,8 @@ services:
       - pg_customers_data:/var/lib/postgresql/data
     ports:
       - '5433:5432'
+    networks:
+      - mspr-ptk
 
   postgres_orders:
     image: postgres:15
@@ -49,8 +51,62 @@ services:
     ports:
       - '5435:5432'
 
+  api-customers:
+    build:
+      context: .
+      dockerfile: apps/api-customers/Dockerfile
+    container_name: api_customers
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres_customers
+    networks:
+      - mspr-ptk
+
+  api-orders:
+    build:
+      context: .
+      dockerfile: apps/api-orders/Dockerfile
+    container_name: api_orders
+    ports:
+      - "3001:3001"
+    environment:
+      DB_HOST: postgres_orders
+      DB_PORT: 5432
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: postgres
+    depends_on:
+      - postgres_orders
+    networks:
+      - mspr-ptk
+
+  api-products:
+    build:
+      context: .
+      dockerfile: apps/api-orders/Dockerfile
+    container_name: api_products
+    ports:
+      - "3002:3002"
+    environment:
+      DB_HOST: postgres_products
+      DB_PORT: 5432
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: postgres
+    depends_on:
+      - postgres_products
+    networks:
+      - mspr-ptk
+
 volumes:
   rabbitmq_data:
   pg_customers_data:
   pg_orders_data:
   pg_products_data:
+
+
+networks:
+  mspr-ptk:
+    driver: bridge
+
