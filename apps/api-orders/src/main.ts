@@ -1,6 +1,9 @@
 import { NestFactory } from '@nestjs/core'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
+import * as dotenv from 'dotenv'
 import { ApiOrdersModule } from './api-orders.module'
+
+dotenv.config()
 
 async function bootstrap() {
 	const app = await NestFactory.create(ApiOrdersModule)
@@ -10,7 +13,7 @@ async function bootstrap() {
 	app.connectMicroservice<MicroserviceOptions>({
 		transport: Transport.RMQ,
 		options: {
-			urls: ['amqp://admin:admin@127.0.0.2:5672'],
+			urls: [process.env.RABBITMQ_URL],
 			// queue: 'api_orders_queue',
 			queue: 'default',
 			queueOptions: {
@@ -21,4 +24,5 @@ async function bootstrap() {
 
 	await app.startAllMicroservices()
 }
+
 bootstrap()

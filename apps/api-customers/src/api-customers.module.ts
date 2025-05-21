@@ -1,6 +1,6 @@
 import { Customer } from '@app/shared/entities/customer.entity'
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ApiCustomersController } from './api-customers.controller'
 import { ApiCustomersService } from './api-customers.service'
@@ -10,17 +10,16 @@ import { ApiCustomersService } from './api-customers.service'
 		ConfigModule.forRoot({
 			isGlobal: true,
 		}),
-		TypeOrmModule.forRoot({
-			type: 'postgres',
-			host: 'localhost',
-			port: 5433,
-			username: 'user',
-			password: 'password',
-			database: 'postgres',
-			entities: [Customer],
-			autoLoadEntities: true,
-			synchronize: true,
-			dropSchema: true,
+		TypeOrmModule.forRootAsync({
+			inject: [ConfigService],
+			useFactory: (config: ConfigService) => ({
+				type: 'postgres',
+				url: config.get<string>('CUSTOMERS_DB_URL'),
+				entities: [Customer],
+				autoLoadEntities: true,
+				synchronize: true,
+				dropSchema: true,
+			}),
 		}),
 		TypeOrmModule.forFeature([Customer]),
 	],
