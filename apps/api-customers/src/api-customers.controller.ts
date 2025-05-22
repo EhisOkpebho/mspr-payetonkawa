@@ -1,5 +1,5 @@
-import { CreateCustomerDto } from '@app/shared/types/dto/customer.dto'
-import { Body, Controller, Delete, Get, Logger, Param, Post, Put } from '@nestjs/common'
+import { CreateCustomerDTO, CustomerDTO, UpdateCustomerDTO } from '@app/shared/types/dto/customer.dto'
+import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Put } from '@nestjs/common'
 import { ApiCustomersService } from './api-customers.service'
 
 @Controller('customers')
@@ -8,33 +8,33 @@ export class ApiCustomersController {
 
 	constructor(private readonly customersService: ApiCustomersService) {}
 
-	@Get()
-	getCustomers() {
-		this.logger.log('GET /customers')
-		return this.customersService.getCustomers()
-	}
-
-	@Get('/:id')
-	getCustomerById(@Param('id') id: string) {
-		this.logger.log(`GET /customers/${id}`)
-		return this.customersService.getCustomerById({ id: parseInt(id) })
-	}
-
 	@Post()
-	createCustomer(@Body() customer: CreateCustomerDto) {
+	create(@Body() customer: CreateCustomerDTO): Promise<CustomerDTO> {
 		this.logger.log('POST /customers')
-		return this.customersService.createCustomer(customer)
+		return this.customersService.create(customer)
 	}
 
 	@Put('/:id')
-	updateCustomer(@Param('id') id: string, @Body() customer: CreateCustomerDto) {
+	update(@Param('id', ParseIntPipe) id: number, @Body() customer: UpdateCustomerDTO): Promise<CustomerDTO> {
 		this.logger.log(`PUT /customers/${id}`)
-		return this.customersService.updateCustomer({ id: parseInt(id) }, customer)
+		return this.customersService.update(id, customer)
 	}
 
 	@Delete('/:id')
-	deleteCustomer(@Param('id') id: string) {
+	delete(@Param('id', ParseIntPipe) id: number): Promise<boolean> {
 		this.logger.log(`DELETE /customers/${id}`)
-		return this.customersService.deleteCustomer({ id: parseInt(id) })
+		return this.customersService.delete(id)
+	}
+
+	@Get()
+	findAll(): Promise<CustomerDTO[]> {
+		this.logger.log('GET /customers')
+		return this.customersService.findAll()
+	}
+
+	@Get('/:id')
+	findById(@Param('id', ParseIntPipe) id: number): Promise<CustomerDTO> {
+		this.logger.log(`GET /customers/${id}`)
+		return this.customersService.findById(id)
 	}
 }

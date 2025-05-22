@@ -1,15 +1,32 @@
-export type FindProductByIdDto = {
+export type ProductDTO = {
 	id: number
-}
-
-export type CreateProductDto = {
 	name: string
 	details: {
-		price: string
+		price: number
+		description: string
+		color: string
+	}
+	stock: number
+	createdAt: Date
+	updatedAt: Date
+}
+
+export type CreateProductDTO = {
+	name: string
+	details: {
+		price: number
 		description: string
 		color: string
 	}
 	stock: number
 }
 
-export type UpdateProductDto = Partial<CreateProductDto>
+export type UpdateProductDTO = {
+	name?: string
+	details?: {
+		price?: number
+		description?: string
+		color?: string
+	}
+	stock?: number
+}

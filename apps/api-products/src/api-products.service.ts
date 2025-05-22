@@ -1,35 +1,44 @@
 import { Product } from '@app/shared/entities/product.entity'
-import { CreateProductDto, FindProductByIdDto, UpdateProductDto } from '@app/shared/types/dto/product.dto'
-import { Injectable } from '@nestjs/common'
+import { UpdateCustomerDTO } from '@app/shared/types/dto/customer.dto'
+import { CreateProductDTO, ProductDTO } from '@app/shared/types/dto/product.dto'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { toProductDTO, toProductEntity } from 'apps/api-products/src/api-product.mapper'
 import { Repository } from 'typeorm'
 
 @Injectable()
 export class ApiProductsService {
 	constructor(
 		@InjectRepository(Product)
-		private readonly productRepository: Repository<Product>
+		private readonly productRepository: Repository<Product>,
 	) {}
 
-	async getProducts(): Promise<Product[]> {
-		return this.productRepository.find()
+	async create(product: CreateProductDTO): Promise<ProductDTO> {
+		const created = await this.productRepository.save(product)
+		return toProductDTO(created)
 	}
 
-	async getProductById({ id }: FindProductByIdDto): Promise<Product> {
-		return this.productRepository.findOne({ where: { id } })
+	async update(id: number, product: UpdateCustomerDTO): Promise<ProductDTO> {
+		await this.productRepository.update(id, toProductEntity(product as ProductDTO))
+		const updated = await this.productRepository.findOne({ where: { id } })
+		return toProductDTO(updated)
 	}
 
-	async createProduct(product: CreateProductDto): Promise<Product> {
-		return this.productRepository.save(product)
-	}
-
-	async updateProduct({ id }: FindProductByIdDto, product: UpdateProductDto): Promise<Product> {
-		await this.productRepository.update(id, product)
-		return this.productRepository.findOne({ where: { id } })
-	}
-
-	async deleteProduct({ id }: FindProductByIdDto): Promise<boolean> {
+	async delete(id: number): Promise<boolean> {
 		const res = await this.productRepository.delete(id)
 		return res.affected > 0
+	}
+
+	async findAll(): Promise<ProductDTO[]> {
+		const products = await this.productRepository.find()
+		return products.map(toProductDTO)
+	}
+
+	async findById(id: number): Promise<ProductDTO> {
+		const product = await this.productRepository.findOne({ where: { id } })
+		if (!product) {
+			throw new NotFoundException(`Product with id ${id} not found`)
+		}
+		return toProductDTO(await this.productRepository.findOne({ where: { id } }))
 	}
 }

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 
 @Entity()
 export class Product {
@@ -8,12 +8,14 @@ export class Product {
 	@Column({ type: 'varchar', length: 255 })
 	name: string
 
-	@Column('jsonb')
-	details: {
-		price: string
-		description: string
-		color: string
-	}
+	@Column({ type: 'int' })
+	price: number
+
+	@Column({ type: 'varchar', length: 255 })
+	description: string
+
+	@Column({ type: 'varchar', length: 255 })
+	color: string
 
 	@Column({ type: 'int' })
 	stock: number

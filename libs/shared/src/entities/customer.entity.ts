@@ -1,30 +1,30 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 
 @Entity()
 export class Customer {
 	@PrimaryGeneratedColumn('identity')
 	id: number
 
-	@Column({ length: 100 })
+	@Column()
 	name: string
 
-	@Column({ length: 100 })
+	@Column()
 	username: string
 
-	@Column({ length: 100 })
+	@Column()
 	firstName: string
 
-	@Column({ length: 100 })
+	@Column()
 	lastName: string
 
-	@Column('jsonb')
-	address: { postalCode: string; city: string }
+	@Column()
+	postalCode: string
 
-	@Column('jsonb')
-	profile: { firstName: string; lastName: string }
+	@Column()
+	city: string
 
-	@Column('jsonb')
-	company: { companyName: string }
+	@Column()
+	companyName: string
 
 	@CreateDateColumn()
 	createdAt: Date
