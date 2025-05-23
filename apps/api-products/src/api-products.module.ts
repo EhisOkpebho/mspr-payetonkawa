@@ -1,9 +1,13 @@
 import { Product } from '@app/shared/entities/product.entity'
+import { User } from '@app/shared/entities/user.entity'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
+import { JwtModule } from '@nestjs/jwt'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ApiProductsController } from './api-products.controller'
 import { ApiProductsService } from './api-products.service'
+import { AuthModule } from './auth/auth.module'
+import { AuthService } from './auth/auth.service'
 
 @Module({
 	imports: [
@@ -20,9 +24,18 @@ import { ApiProductsService } from './api-products.service'
 				synchronize: true,
 			}),
 		}),
-		TypeOrmModule.forFeature([Product]),
+		TypeOrmModule.forFeature([User, Product]),
+		JwtModule.registerAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: (configService: ConfigService) => ({
+				secret: configService.get<string>('JWT_ACCESS_SECRET'),
+				signOptions: { expiresIn: configService.get<string>('JWT_ACCESS_EXPIRATION') || '15m' },
+			}),
+		}),
+		AuthModule,
 	],
 	controllers: [ApiProductsController],
-	providers: [ApiProductsService],
+	providers: [ApiProductsService, AuthService],
 })
 export class ApiProductsModule {}

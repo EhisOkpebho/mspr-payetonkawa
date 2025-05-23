@@ -2,7 +2,7 @@ import { Customer } from '@app/shared/entities/customer.entity'
 import { CreateCustomerDTO, CustomerDTO, UpdateCustomerDTO } from '@app/shared/types/dto/customer.dto'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { toCustomerDTO, toCustomerEntity } from 'apps/api-customers/src/api-customer.mapper'
+import { toCustomerDTO, toCustomerEntity } from 'apps/api-customers/src/api-customers.mapper'
 import { Repository } from 'typeorm'
 
 @Injectable()

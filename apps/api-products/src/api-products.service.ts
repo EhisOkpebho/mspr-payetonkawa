@@ -3,7 +3,7 @@ import { UpdateCustomerDTO } from '@app/shared/types/dto/customer.dto'
 import { CreateProductDTO, ProductDTO } from '@app/shared/types/dto/product.dto'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { toProductDTO, toProductEntity } from 'apps/api-products/src/api-product.mapper'
+import { toProductDTO, toProductEntity } from 'apps/api-products/src/api-products.mapper'
 import { Repository } from 'typeorm'
 
 @Injectable()

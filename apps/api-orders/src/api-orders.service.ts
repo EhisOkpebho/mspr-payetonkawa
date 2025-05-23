@@ -30,6 +30,10 @@ export class ApiOrdersService {
 	}
 
 	async findById(id: number): Promise<Order> {
-		return this.orderRepository.findOne({ where: { id } })
+		const order = await this.orderRepository.findOne({ where: { id } })
+		if (!order) {
+			throw new Error(`Order with id ${id} not found`)
+		}
+		return order
 	}
 }
