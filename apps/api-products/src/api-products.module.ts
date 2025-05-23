@@ -1,9 +1,10 @@
 import { Product } from '@app/shared/entities/product.entity'
 import { User } from '@app/shared/entities/user.entity'
-import { Module } from '@nestjs/common'
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { TypeOrmModule } from '@nestjs/typeorm'
+import { UserMiddleware } from 'apps/api-products/src/_middlewares/user.middleware'
 import { ApiProductsController } from './api-products.controller'
 import { ApiProductsService } from './api-products.service'
 import { AuthModule } from './auth/auth.module'
@@ -38,4 +39,8 @@ import { AuthService } from './auth/auth.service'
 	controllers: [ApiProductsController],
 	providers: [ApiProductsService, AuthService],
 })
-export class ApiProductsModule {}
+export class ApiProductsModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer.apply(UserMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL })
+	}
+}
