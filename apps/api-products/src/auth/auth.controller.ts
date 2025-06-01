@@ -1,8 +1,10 @@
 import { User } from '@app/shared/entities/user.entity'
-import { Body, Controller, HttpStatus, Logger, Post, Req, Res } from '@nestjs/common'
+import { Body, Controller, Get, HttpStatus, Logger, Post, Req, Res, UseGuards } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Request, Response } from 'express'
 import { AuthService } from './auth.service'
+import { ReqUser } from '../_decorators/user.decorator'
+import { AuthGuard } from '../_guards/auth.guard'
 
 @Controller('auth')
 export class AuthController {
@@ -81,5 +83,12 @@ export class AuthController {
 		this._setAuthCookies(res, accessToken, refreshToken)
 
 		return res.status(HttpStatus.OK).json({ message: 'Token refreshed successfully' })
+	}
+
+	@UseGuards(AuthGuard)
+	@Get('me')
+	async getMe(@ReqUser() user: User): Promise<User> {
+		this.logger.log(`GET /auth/me`)
+		return user
 	}
 }

@@ -9,6 +9,11 @@ import { ApiProductsController } from './api-products.controller'
 import { ApiProductsService } from './api-products.service'
 import { AuthModule } from './auth/auth.module'
 import { AuthService } from './auth/auth.service'
+import { Role } from '@app/shared/entities/role.entity'
+import { UserRole } from '@app/shared/entities/user-role.entity'
+import { RolesModule } from './roles/roles.module'
+import { RolesService } from './roles/roles.service'
+import { RolesGuard } from './_guards/roles.guard'
 
 @Module({
 	imports: [
@@ -25,7 +30,7 @@ import { AuthService } from './auth/auth.service'
 				synchronize: true,
 			}),
 		}),
-		TypeOrmModule.forFeature([User, Product]),
+		TypeOrmModule.forFeature([User, Role, UserRole, Product]),
 		JwtModule.registerAsync({
 			imports: [ConfigModule],
 			inject: [ConfigService],
@@ -35,9 +40,10 @@ import { AuthService } from './auth/auth.service'
 			}),
 		}),
 		AuthModule,
+		RolesModule,
 	],
 	controllers: [ApiProductsController],
-	providers: [ApiProductsService, AuthService],
+	providers: [ApiProductsService, AuthService, RolesService, { provide: 'APP_GUARD', useClass: RolesGuard }],
 })
 export class ApiProductsModule {
 	configure(consumer: MiddlewareConsumer) {

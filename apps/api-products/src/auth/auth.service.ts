@@ -1,16 +1,19 @@
 import { User } from '@app/shared/entities/user.entity'
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common'
+import { ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService, JwtVerifyOptions } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
 import { Repository } from 'typeorm'
+import { RolesService } from '../roles/roles.service'
 
 @Injectable()
 export class AuthService {
 	constructor(
 		@InjectRepository(User)
 		private readonly userRepository: Repository<User>,
+		@Inject(RolesService)
+		private readonly rolesService: RolesService,
 		private readonly configService: ConfigService,
 		private readonly jwtService: JwtService,
 	) {}
@@ -28,7 +31,8 @@ export class AuthService {
 			password: hashedPassword,
 		})
 
-		return await this.userRepository.save(newUser)
+		const user = await this.userRepository.save(newUser)
+		return { ...user, roles: [] }
 	}
 
 	async signIn(
@@ -43,6 +47,9 @@ export class AuthService {
 		if (!user) {
 			throw new UnauthorizedException('Invalid credentials')
 		}
+
+		const userRoles = await this.rolesService.findPermissions()
+		user.roles = userRoles.filter((ur) => ur.user.id === user.id).map((ur) => ur.role.name)
 
 		const isPasswordValid = await this.comparePassword(password, user.password)
 		if (!isPasswordValid) {

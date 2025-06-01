@@ -16,4 +16,6 @@ export class User {
 
 	@UpdateDateColumn()
 	updatedAt: Date
+
+	roles?: string[]
 }
