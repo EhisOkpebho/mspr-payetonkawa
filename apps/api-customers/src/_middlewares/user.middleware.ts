@@ -1,10 +1,10 @@
 import { User } from '@app/shared/entities/user.entity'
 import { Inject, Injectable, Logger, NestMiddleware } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { AuthService } from 'apps/api-products/src/auth/auth.service'
 import { NextFunction, Request, Response } from 'express'
 import { Repository } from 'typeorm'
 import { RolesService } from '../roles/roles.service'
+import { AuthService } from '../auth/auth.service'
 
 @Injectable()
 export class UserMiddleware implements NestMiddleware {

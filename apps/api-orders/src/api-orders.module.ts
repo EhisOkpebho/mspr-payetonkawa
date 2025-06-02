@@ -1,9 +1,12 @@
 import { Order } from '@app/shared/entities/order.entity'
-import { Module } from '@nestjs/common'
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ApiOrdersController } from './api-orders.controller'
 import { ApiOrdersService } from './api-orders.service'
+import { UserMiddleware } from './_middlewares/user.middleware'
+import { JwtModule } from '@nestjs/jwt'
+import { RolesGuard } from '../../api-customers/src/_guards/roles.guard'
 
 @Module({
 	imports: [
@@ -20,9 +23,21 @@ import { ApiOrdersService } from './api-orders.service'
 				synchronize: true,
 			}),
 		}),
+		JwtModule.registerAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: (configService: ConfigService) => ({
+				secret: configService.get<string>('JWT_ACCESS_SECRET'),
+				signOptions: { expiresIn: configService.get<string>('JWT_ACCESS_EXPIRATION') || '15m' },
+			}),
+		}),
 		TypeOrmModule.forFeature([Order]),
 	],
 	controllers: [ApiOrdersController],
-	providers: [ApiOrdersService],
+	providers: [ApiOrdersService, { provide: 'APP_GUARD', useClass: RolesGuard }],
 })
-export class ApiOrdersModule {}
+export class ApiOrdersModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer.apply(UserMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL })
+	}
+}

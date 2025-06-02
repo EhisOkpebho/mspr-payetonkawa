@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
 import * as dotenv from 'dotenv'
 import { ApiOrdersModule } from './api-orders.module'
+import * as cookieParser from 'cookie-parser'
 
 dotenv.config()
 
@@ -9,6 +10,8 @@ async function bootstrap() {
 	const app = await NestFactory.create(ApiOrdersModule)
 
 	await app.listen(3001)
+	app.use(cookieParser())
+	app.enableCors()
 
 	app.connectMicroservice<MicroserviceOptions>({
 		transport: Transport.RMQ,
