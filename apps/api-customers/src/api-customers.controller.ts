@@ -4,7 +4,7 @@ import { ApiCustomersService } from './api-customers.service'
 
 @Controller('customers')
 export class ApiCustomersController {
-	logger = new Logger(ApiCustomersController.name)
+	private readonly logger = new Logger(ApiCustomersController.name)
 
 	constructor(private readonly customersService: ApiCustomersService) {}
 

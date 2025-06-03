@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
 export class UserMiddleware implements NestMiddleware {
-	logger = new Logger(UserMiddleware.name)
+	private readonly logger = new Logger(UserMiddleware.name)
 
 	constructor(private readonly jwtService: JwtService) {}
 

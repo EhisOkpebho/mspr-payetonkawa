@@ -8,6 +8,7 @@ import { AuthService } from './auth.service'
 import { RolesService } from '../roles/roles.service'
 import { Role } from '@app/shared/entities/role.entity'
 import { UserRole } from '@app/shared/entities/user-role.entity'
+import { AuthSeederService } from './auth-seeder.service'
 
 @Module({
 	imports: [
@@ -21,7 +22,7 @@ import { UserRole } from '@app/shared/entities/user-role.entity'
 			}),
 		}),
 	],
-	providers: [AuthService, RolesService],
+	providers: [AuthService, RolesService, AuthSeederService],
 	controllers: [AuthController],
 	exports: [AuthService],
 })

@@ -8,10 +8,10 @@ dotenv.config()
 
 async function bootstrap() {
 	const app = await NestFactory.create(ApiOrdersModule)
-
-	await app.listen(3001)
 	app.use(cookieParser())
 	app.enableCors()
+
+	await app.listen(3001)
 
 	app.connectMicroservice<MicroserviceOptions>({
 		transport: Transport.RMQ,

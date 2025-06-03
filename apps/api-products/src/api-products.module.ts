@@ -7,12 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserMiddleware } from 'apps/api-products/src/_middlewares/user.middleware'
 import { ApiProductsController } from './api-products.controller'
 import { ApiProductsService } from './api-products.service'
-import { AuthModule } from './auth/auth.module'
-import { AuthService } from './auth/auth.service'
 import { Role } from '@app/shared/entities/role.entity'
 import { UserRole } from '@app/shared/entities/user-role.entity'
-import { RolesModule } from './roles/roles.module'
-import { RolesService } from './roles/roles.service'
 import { RolesGuard } from './_guards/roles.guard'
 
 @Module({
@@ -39,11 +35,9 @@ import { RolesGuard } from './_guards/roles.guard'
 				signOptions: { expiresIn: configService.get<string>('JWT_ACCESS_EXPIRATION') || '15m' },
 			}),
 		}),
-		AuthModule,
-		RolesModule,
 	],
 	controllers: [ApiProductsController],
-	providers: [ApiProductsService, AuthService, RolesService, { provide: 'APP_GUARD', useClass: RolesGuard }],
+	providers: [ApiProductsService, { provide: 'APP_GUARD', useClass: RolesGuard }],
 })
 export class ApiProductsModule {
 	configure(consumer: MiddlewareConsumer) {
