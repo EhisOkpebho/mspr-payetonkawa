@@ -1,6 +1,5 @@
 import { Product } from '@app/shared/entities/product.entity'
-import { UpdateCustomerDTO } from '@app/shared/types/dto/customer.dto'
-import { CreateProductDTO, ProductDTO } from '@app/shared/types/dto/product.dto'
+import { CreateProductDTO, ProductDTO, UpdateProductDTO } from '@app/shared/types/dto/product.dto'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { toProductDTO, toProductEntity } from 'apps/api-products/src/api-products.mapper'
@@ -18,13 +17,15 @@ export class ApiProductsService {
 		return toProductDTO(created)
 	}
 
-	async update(id: number, product: UpdateCustomerDTO): Promise<ProductDTO> {
+	async update(id: number, product: UpdateProductDTO): Promise<ProductDTO> {
+		await this.findById(id)
 		await this.productRepository.update(id, toProductEntity(product as ProductDTO))
 		const updated = await this.productRepository.findOne({ where: { id } })
 		return toProductDTO(updated)
 	}
 
 	async delete(id: number): Promise<boolean> {
+		await this.findById(id)
 		const res = await this.productRepository.delete(id)
 		return res.affected > 0
 	}

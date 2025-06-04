@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm'
+
+// TODO: add relations to customer and product entities instead of just ids
 
 @Entity()
 export class Order {
@@ -10,6 +12,9 @@ export class Order {
 
 	@Column({ type: 'int' })
 	productId: number
+
+	@Column({ type: 'int', default: 1 })
+	quantity: number
 
 	@CreateDateColumn()
 	createdAt: Date

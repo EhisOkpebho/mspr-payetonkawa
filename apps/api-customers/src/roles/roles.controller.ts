@@ -2,9 +2,9 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } f
 import { RolesService } from './roles.service'
 import { CreateUserRoleDto } from 'libs/shared/src/types/dto/user-role.dto'
 import { AuthGuard } from '../_guards/auth.guard'
-import { Roles } from '../_decorators/roles.decorator'
-import { ReqUser } from '../_decorators/user.decorator'
 import { User } from '@app/shared/entities/user.entity'
+import { ReqUser } from '@app/shared/_decorators/user.decorator'
+import { Roles } from '@app/shared/_decorators/roles.decorator'
 
 @Roles('admin')
 @UseGuards(AuthGuard)

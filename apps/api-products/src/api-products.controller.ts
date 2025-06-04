@@ -1,10 +1,12 @@
 import { CreateProductDTO, ProductDTO, UpdateProductDTO } from '@app/shared/types/dto/product.dto'
 import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
 import { ApiProductsService } from './api-products.service'
-import { ReqUser } from './_decorators/user.decorator'
 import { User } from '@app/shared/entities/user.entity'
 import { AuthGuard } from './_guards/auth.guard'
+import { ReqUser } from '@app/shared/_decorators/user.decorator'
+import { Roles } from '@app/shared/_decorators/roles.decorator'
 
+@UseGuards(AuthGuard)
 @UseGuards(AuthGuard)
 @Controller('products')
 export class ApiProductsController {
@@ -12,30 +14,35 @@ export class ApiProductsController {
 
 	constructor(private readonly productsService: ApiProductsService) {}
 
+	@Roles('admin', 'manager', 'distributor')
 	@Post()
 	create(@Body() product: CreateProductDTO, @ReqUser() user: User): Promise<ProductDTO> {
 		this.logger.log(`POST /products by user ${user.id}`)
 		return this.productsService.create(product)
 	}
 
+	@Roles('admin', 'manager', 'distributor')
 	@Put('/:id')
 	update(@Param('id', ParseIntPipe) id: number, @Body() product: UpdateProductDTO, @ReqUser() user: User): Promise<ProductDTO> {
 		this.logger.log(`PUT /products/${id} by user ${user.id}`)
 		return this.productsService.update(id, product)
 	}
 
+	@Roles('admin', 'manager', 'distributor')
 	@Delete('/:id')
 	delete(@Param('id', ParseIntPipe) id: number, @ReqUser() user: User): Promise<boolean> {
 		this.logger.log(`DELETE /products/${id} by user ${user.id}`)
 		return this.productsService.delete(id)
 	}
 
+	@Roles('admin', 'manager')
 	@Get()
 	findAll(@ReqUser() user: User): Promise<ProductDTO[]> {
 		this.logger.log(`GET /products by user ${user.id}`)
 		return this.productsService.findAll()
 	}
 
+	@Roles('admin', 'manager', 'distributor')
 	@Get('/:id')
 	findById(@Param('id', ParseIntPipe) id: number, @ReqUser() user: User): Promise<ProductDTO> {
 		this.logger.log(`GET /products/${id} by user ${user.id}`)

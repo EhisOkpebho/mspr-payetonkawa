@@ -1,38 +1,32 @@
 import { Order } from '@app/shared/entities/order.entity'
-import { CreateOrderDto, UpdateOrderDto } from '@app/shared/types/dto/order.dto'
-import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Put } from '@nestjs/common'
+import { CreateOrderDto } from '@app/shared/types/dto/order.dto'
+import { Body, Controller, Get, Logger, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiOrdersService } from './api-orders.service'
+import { AuthGuard } from './_guards/auth.guard'
+import { Roles } from '@app/shared/_decorators/roles.decorator'
 
+@UseGuards(AuthGuard)
 @Controller('orders')
 export class ApiOrdersController {
 	private readonly logger = new Logger(ApiOrdersController.name)
 
 	constructor(private readonly ordersService: ApiOrdersService) {}
 
+	@Roles('admin', 'customer')
 	@Post()
 	create(@Body() order: CreateOrderDto): Promise<Order> {
 		this.logger.log('POST /orders')
 		return this.ordersService.create(order)
 	}
 
-	@Put('/:id')
-	update(@Param('id', ParseIntPipe) id: number, @Body() order: UpdateOrderDto): Promise<Order> {
-		this.logger.log(`PUT /orders/${id}`)
-		return this.ordersService.update(id, order)
-	}
-
-	@Delete('/:id')
-	delete(@Param('id', ParseIntPipe) id: number): Promise<boolean> {
-		this.logger.log(`DELETE /orders/${id}`)
-		return this.ordersService.delete(id)
-	}
-
+	@Roles('admin', 'manager')
 	@Get()
 	findAll(): Promise<Order[]> {
 		this.logger.log('GET /orders')
 		return this.ordersService.findAll()
 	}
 
+	@Roles('admin', 'manager', 'customer')
 	@Get('/:id')
 	findById(@Param('id', ParseIntPipe) id: number): Promise<Order> {
 		this.logger.log(`GET /orders/${id}`)

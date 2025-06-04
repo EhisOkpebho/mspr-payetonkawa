@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { Customer } from '@app/shared/entities/customer.entity'
 
 @Entity()
 export class User {
@@ -10,6 +11,14 @@ export class User {
 
 	@Column()
 	password: string
+
+	@OneToOne(() => Customer, (customer) => customer.user, {
+		cascade: true,
+		eager: true,
+		nullable: true,
+	})
+	@JoinColumn()
+	customer: Customer
 
 	@CreateDateColumn()
 	createdAt: Date

@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { User } from '@app/shared/entities/user.entity'
 
 @Entity()
 export class Customer {
@@ -25,6 +26,9 @@ export class Customer {
 
 	@Column()
 	companyName: string
+
+	@OneToOne(() => User, (user) => user.customer)
+	user: User
 
 	@CreateDateColumn()
 	createdAt: Date

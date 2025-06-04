@@ -2,7 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { CreateUserRoleDto } from 'libs/shared/src/types/dto/user-role.dto'
 import { UserRole } from '@app/shared/entities/user-role.entity'
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { Role } from '@app/shared/entities/role.entity'
 import { User } from '@app/shared/entities/user.entity'
 
@@ -35,8 +35,20 @@ export class RolesService {
 	}
 
 	async deletePermission(id: number) {
+		await this.findPermissionById(id)
 		const res = await this.userRoleRepo.delete(id)
 		return res.affected > 0
+	}
+
+	async findPermissionById(id: number) {
+		const permission = await this.userRoleRepo.findOne({
+			where: { id },
+			relations: ['user', 'role', 'grantedBy'],
+		})
+		if (!permission) {
+			throw new NotFoundException(`Permission with id ${id} not found`)
+		}
+		return permission
 	}
 
 	async findPermissions() {

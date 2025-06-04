@@ -3,8 +3,8 @@ import { Body, Controller, Get, HttpStatus, Logger, Post, Req, Res, UseGuards } 
 import { ConfigService } from '@nestjs/config'
 import { Request, Response } from 'express'
 import { AuthService } from './auth.service'
-import { ReqUser } from '../_decorators/user.decorator'
 import { AuthGuard } from '../_guards/auth.guard'
+import { ReqUser } from '@app/shared/_decorators/user.decorator'
 
 @Controller('auth')
 export class AuthController {

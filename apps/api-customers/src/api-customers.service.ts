@@ -1,9 +1,11 @@
 import { Customer } from '@app/shared/entities/customer.entity'
 import { CreateCustomerDTO, CustomerDTO, UpdateCustomerDTO } from '@app/shared/types/dto/customer.dto'
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { toCustomerDTO, toCustomerEntity } from 'apps/api-customers/src/api-customers.mapper'
 import { Repository } from 'typeorm'
+import { User } from '@app/shared/entities/user.entity'
+import { hasRole } from '@app/shared/utils/roles.utils'
 
 @Injectable()
 export class ApiCustomersService {
@@ -12,17 +14,37 @@ export class ApiCustomersService {
 		private readonly customerRepository: Repository<Customer>,
 	) {}
 
-	async create(customer: CreateCustomerDTO): Promise<CustomerDTO> {
-		const created = await this.customerRepository.save(toCustomerEntity(customer as unknown as CustomerDTO))
+	async create(customer: CreateCustomerDTO, user: User): Promise<CustomerDTO> {
+		if (user.customer) {
+			throw new ConflictException(`A customer profile is already linked to this user`)
+		}
+		const created = await this.customerRepository.save({
+			...toCustomerEntity(customer as unknown as CustomerDTO),
+			user,
+		})
 		return toCustomerDTO(created)
 	}
 
-	async update(id: number, customer: UpdateCustomerDTO): Promise<CustomerDTO> {
+	async update(id: number, customer: UpdateCustomerDTO, user: User): Promise<CustomerDTO> {
+		if (!user.customer && !hasRole('admin', user)) {
+			throw new NotFoundException(`No customer profile linked to this user`)
+		}
+		if (user.customer.id !== id && !hasRole('admin', user)) {
+			throw new ForbiddenException('Not allowed to update this customer')
+		}
+		await this.findById(id)
 		await this.customerRepository.update(id, toCustomerEntity(customer as CustomerDTO))
 		return toCustomerDTO(await this.customerRepository.findOne({ where: { id } }))
 	}
 
-	async delete(id: number): Promise<boolean> {
+	async delete(id: number, user: User): Promise<boolean> {
+		if (!user.customer) {
+			throw new NotFoundException(`No customer profile linked to this user`)
+		}
+		if (user.customer.id !== id && !hasRole('admin', user)) {
+			throw new ForbiddenException('Not allowed to delete this customer')
+		}
+		await this.findById(id)
 		const res = await this.customerRepository.delete(id)
 		return res.affected > 0
 	}
