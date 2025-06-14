@@ -3,11 +3,14 @@ import { NestFactory } from '@nestjs/core'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
 import * as dotenv from 'dotenv'
 import { ApiCustomersModule } from './api-customers.module'
+import * as cookieParser from 'cookie-parser'
 
 dotenv.config()
 
 async function bootstrap() {
 	const app = await NestFactory.create(ApiCustomersModule)
+	app.use(cookieParser())
+	app.enableCors()
 
 	await app.listen(3000)
 
