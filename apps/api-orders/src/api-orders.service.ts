@@ -1,6 +1,6 @@
 import { Order } from '@app/shared/entities/order.entity'
 import { CreateOrderDto } from '@app/shared/types/dto/order.dto'
-import { Injectable, UseGuards } from '@nestjs/common'
+import { Injectable, NotFoundException, UseGuards } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { AuthGuard } from './_guards/auth.guard'
@@ -14,7 +14,7 @@ export class ApiOrdersService {
 		private readonly orderRepository: Repository<Order>,
 	) {}
 
-	// TODO: use request user to set customer id in order
+	// TODO: Check with API call if product is in stock and right qauntity
 
 	@Roles()
 	async create(order: CreateOrderDto): Promise<Order> {
@@ -28,7 +28,7 @@ export class ApiOrdersService {
 	async findById(id: number): Promise<Order> {
 		const order = await this.orderRepository.findOne({ where: { id } })
 		if (!order) {
-			throw new Error(`Order with id ${id} not found`)
+			throw new NotFoundException(`Order with id ${id} not found`)
 		}
 		return order
 	}

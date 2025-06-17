@@ -13,7 +13,7 @@ export class ApiProductsService {
 	) {}
 
 	async create(product: CreateProductDTO): Promise<ProductDTO> {
-		const created = await this.productRepository.save(product)
+		const created = await this.productRepository.save(toProductEntity(product as ProductDTO))
 		return toProductDTO(created)
 	}
 

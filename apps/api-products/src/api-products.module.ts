@@ -1,5 +1,4 @@
 import { Product } from '@app/shared/entities/product.entity'
-import { User } from '@app/shared/entities/user.entity'
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
@@ -7,8 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserMiddleware } from 'apps/api-products/src/_middlewares/user.middleware'
 import { ApiProductsController } from './api-products.controller'
 import { ApiProductsService } from './api-products.service'
-import { Role } from '@app/shared/entities/role.entity'
-import { UserRole } from '@app/shared/entities/user-role.entity'
 import { RolesGuard } from './_guards/roles.guard'
 
 @Module({
@@ -26,7 +23,7 @@ import { RolesGuard } from './_guards/roles.guard'
 				synchronize: true,
 			}),
 		}),
-		TypeOrmModule.forFeature([User, Role, UserRole, Product]),
+		TypeOrmModule.forFeature([Product]),
 		JwtModule.registerAsync({
 			imports: [ConfigModule],
 			inject: [ConfigService],

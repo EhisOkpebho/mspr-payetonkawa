@@ -4,6 +4,8 @@ import { Body, Controller, Get, Logger, Param, ParseIntPipe, Post, UseGuards } f
 import { ApiOrdersService } from './api-orders.service'
 import { AuthGuard } from './_guards/auth.guard'
 import { Roles } from '@app/shared/_decorators/roles.decorator'
+import { ReqUser } from '@app/shared/_decorators/user.decorator'
+import { User } from '@app/shared/entities/user.entity'
 
 @UseGuards(AuthGuard)
 @Controller('orders')
@@ -14,9 +16,9 @@ export class ApiOrdersController {
 
 	@Roles('admin', 'customer')
 	@Post()
-	create(@Body() order: CreateOrderDto): Promise<Order> {
+	create(@Body() order: CreateOrderDto, @ReqUser() user: User): Promise<Order> {
 		this.logger.log('POST /orders')
-		return this.ordersService.create(order)
+		return this.ordersService.create({ ...order, customerId: user.id })
 	}
 
 	@Roles('admin', 'manager')
