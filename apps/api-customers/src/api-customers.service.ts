@@ -2,10 +2,10 @@ import { Customer } from '@app/shared/entities/customer.entity'
 import { CreateCustomerDTO, CustomerDTO, UpdateCustomerDTO } from '@app/shared/types/dto/customer.dto'
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { toCustomerDTO, toCustomerEntity } from 'apps/api-customers/src/api-customers.mapper'
 import { Repository } from 'typeorm'
 import { User } from '@app/shared/entities/user.entity'
 import { hasRole } from '@app/shared/utils/roles.utils'
+import { toCustomerDTO, toCustomerEntity } from './api-customers.mapper'
 
 @Injectable()
 export class ApiCustomersService {
