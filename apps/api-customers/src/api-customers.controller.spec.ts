@@ -123,5 +123,5 @@ describe('ApiCustomersController', () => {
 		const result = await controller.findById(1)
 		expect(service.findById).toHaveBeenCalledWith(1)
 		expect(result).toEqual(mockCustomer)
-	})s
+	})
 })
