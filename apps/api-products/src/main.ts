@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core'
-import { MicroserviceOptions, Transport } from '@nestjs/microservices'
+import { MicroserviceOptions, RmqStatus, Transport } from '@nestjs/microservices'
 import * as cookieParser from 'cookie-parser'
 import * as dotenv from 'dotenv'
 import { ApiProductsModule } from './api-products.module'
@@ -11,21 +11,23 @@ async function bootstrap() {
 	app.use(cookieParser())
 	app.enableCors()
 
-	await app.listen(3002)
-
-	app.connectMicroservice<MicroserviceOptions>({
+	const server = app.connectMicroservice<MicroserviceOptions>({
 		transport: Transport.RMQ,
 		options: {
 			urls: [process.env.RABBITMQ_URL],
-			// queue: 'api_products_queue',
-			queue: 'default',
+			queue: process.env.RABBITMQ_PRODUCTS_QUEUE,
 			queueOptions: {
 				durable: false,
 			},
 		},
 	})
 
+	server.status.subscribe((status: RmqStatus) => {
+		console.log(`Microservice with queue ${process.env.RABBITMQ_PRODUCTS_QUEUE} is ${status} to RabbitMQ`)
+	})
+
 	await app.startAllMicroservices()
+	await app.listen(3002)
 }
 
 bootstrap()

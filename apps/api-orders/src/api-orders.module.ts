@@ -1,12 +1,13 @@
 import { Order } from '@app/shared/entities/order.entity'
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
+import { JwtModule } from '@nestjs/jwt'
+import { ClientsModule, Transport } from '@nestjs/microservices'
 import { TypeOrmModule } from '@nestjs/typeorm'
+import { RolesGuard } from '../../api-customers/src/_guards/roles.guard'
+import { UserMiddleware } from './_middlewares/user.middleware'
 import { ApiOrdersController } from './api-orders.controller'
 import { ApiOrdersService } from './api-orders.service'
-import { UserMiddleware } from './_middlewares/user.middleware'
-import { JwtModule } from '@nestjs/jwt'
-import { RolesGuard } from '../../api-customers/src/_guards/roles.guard'
 
 @Module({
 	imports: [
@@ -32,6 +33,22 @@ import { RolesGuard } from '../../api-customers/src/_guards/roles.guard'
 			}),
 		}),
 		TypeOrmModule.forFeature([Order]),
+		ConfigModule.forRoot({ isGlobal: true }),
+		ClientsModule.registerAsync([
+			{
+				name: 'PRODUCTS_SERVICE',
+				imports: [ConfigModule],
+				inject: [ConfigService],
+				useFactory: (config: ConfigService) => ({
+					transport: Transport.RMQ,
+					options: {
+						urls: [config.get<string>('RABBITMQ_URL')],
+						queue: config.get<string>('RABBITMQ_PRODUCTS_QUEUE'),
+						queueOptions: { durable: false },
+					},
+				}),
+			},
+		]),
 	],
 	controllers: [ApiOrdersController],
 	providers: [ApiOrdersService, { provide: 'APP_GUARD', useClass: RolesGuard }],

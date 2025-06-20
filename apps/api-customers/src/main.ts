@@ -1,9 +1,9 @@
 import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
-import { MicroserviceOptions, Transport } from '@nestjs/microservices'
+import { MicroserviceOptions, RmqStatus, Transport } from '@nestjs/microservices'
+import * as cookieParser from 'cookie-parser'
 import * as dotenv from 'dotenv'
 import { ApiCustomersModule } from './api-customers.module'
-import * as cookieParser from 'cookie-parser'
 
 dotenv.config()
 
@@ -12,18 +12,19 @@ async function bootstrap() {
 	app.use(cookieParser())
 	app.enableCors()
 
-	await app.listen(3000)
-
-	app.connectMicroservice<MicroserviceOptions>({
+	const server = app.connectMicroservice<MicroserviceOptions>({
 		transport: Transport.RMQ,
 		options: {
 			urls: [process.env.RABBITMQ_URL],
-			// queue: 'api_clients_queue',
-			queue: 'default',
+			queue: process.env.RABBITMQ_CUSTOMERS_QUEUE,
 			queueOptions: {
 				durable: false,
 			},
 		},
+	})
+
+	server.status.subscribe((status: RmqStatus) => {
+		console.log(`Microservice with queue ${process.env.RABBITMQ_CUSTOMERS_QUEUE} is ${status} to RabbitMQ`)
 	})
 
 	app.useGlobalPipes(
@@ -35,6 +36,7 @@ async function bootstrap() {
 	)
 
 	await app.startAllMicroservices()
+	await app.listen(3000)
 }
 
 bootstrap()
