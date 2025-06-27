@@ -1,32 +1,88 @@
-import { Roles } from '@app/shared/_decorators/roles.decorator'
 import { Order } from '@app/shared/entities/order.entity'
 import { CreateOrderDto } from '@app/shared/types/dto/order.dto'
-import { Inject, Injectable, NotFoundException, UseGuards } from '@nestjs/common'
+import { ProductDTO } from '@app/shared/types/dto/product.dto'
+import { HttpService } from '@nestjs/axios'
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { ClientProxy } from '@nestjs/microservices'
 import { InjectRepository } from '@nestjs/typeorm'
 import { lastValueFrom } from 'rxjs'
 import { Repository } from 'typeorm'
-import { AuthGuard } from './_guards/auth.guard'
 
-@UseGuards(AuthGuard)
 @Injectable()
 export class ApiOrdersService {
 	constructor(
+		private readonly configService: ConfigService,
 		@InjectRepository(Order)
 		private readonly orderRepository: Repository<Order>,
 		@Inject('PRODUCTS_SERVICE')
 		private readonly productsClient: ClientProxy,
+		private readonly httpService: HttpService,
 	) {}
 
-	// url rabbitmq pur accéder à la version web
-	// http://localhost:15672
+	// async create(dto: CreateOrderDto): Promise<Order> {
+	// 	const order = await this.orderRepository.save(dto)
+	// 	await lastValueFrom(this.productsClient.emit('order.created', { order }))
+	// 	return order
+	// }
 
-	// TODO: Check with API call if product is in stock and right quantity
+	// async create(dto: CreateOrderDto): Promise<Order> {
+	// 	const trustKey = this.configService.get<string>('MS_API_ORDERS_TRUST_KEY')
+	// 	const servicePort = this.configService.get<string>('MS_API_PRODUCTS_PORT') || '3002'
+	//
+	// 	const response = await lastValueFrom(
+	// 		this.httpService.get<ProductDTO>(`http://localhost:${servicePort}/products/${dto.productId}`, {
+	// 			headers: {
+	// 				MS_TRUST_ID: 'api_orders',
+	// 				MS_TRUST_KEY: trustKey,
+	// 			},
+	// 		}),
+	// 	)
+	// 	const product = response.data
+	// 	if (!product) throw new NotFoundException(`Product ${dto.productId} not found`)
+	// 	if (product.stock < dto.quantity) {
+	// 		throw new BadRequestException(`Insufficient stock for product ${dto.productId} (remaining: ${product.stock})`)
+	// 	}
+	// 	const order = await this.orderRepository.save(dto)
+	// 	await lastValueFrom(this.productsClient.emit('order.created', { order }))
+	// 	return order
+	// }
 
-	@Roles()
 	async create(dto: CreateOrderDto): Promise<Order> {
+		const trustKey = this.configService.get<string>('MS_API_ORDERS_TRUST_KEY')
+		const servicePort = this.configService.get<string>('MS_API_PRODUCTS_PORT') || '3002'
+
+		let product: ProductDTO
+
+		try {
+			const response = await lastValueFrom(
+				this.httpService.get<ProductDTO>(`http://localhost:${servicePort}/products/${dto.productId}`, {
+					headers: {
+						MS_TRUST_ID: 'api_orders',
+						MS_TRUST_KEY: trustKey,
+					},
+				}),
+			)
+			product = response.data
+		} catch (error) {
+			if (error.response?.status === 404) throw new NotFoundException(`Product ${dto.productId} not found`)
+
+			if (error.response) throw new BadRequestException(`Product service error: ${error.response.status}`)
+
+			if (error.request) throw new BadRequestException(`Product service unreachable`)
+
+			throw new BadRequestException(`Unexpected error contacting product service`)
+		}
+
+		if (!product) throw new NotFoundException(`Product ${dto.productId} not found`)
+
+		if (product.stock < dto.quantity)
+			throw new BadRequestException(`Insufficient stock for product ${dto.productId} (remaining: ${product.stock})`)
+
 		const order = await this.orderRepository.save(dto)
-		await lastValueFrom(this.productsClient.emit('order.created', { order }))
+
+		lastValueFrom(this.productsClient.emit('order.created', { order }))
+
 		return order
 	}
 

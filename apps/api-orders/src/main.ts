@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core'
 import { MicroserviceOptions, RmqStatus, Transport } from '@nestjs/microservices'
 import * as cookieParser from 'cookie-parser'
 import * as dotenv from 'dotenv'
-import * as process from 'node:process'
 import { ApiOrdersModule } from './api-orders.module'
 
 dotenv.config()
@@ -28,7 +27,7 @@ async function bootstrap() {
 	})
 
 	await app.startAllMicroservices()
-	await app.listen(3001)
+	await app.listen(process.env.MS_API_ORDERS_PORT)
 }
 
 bootstrap()

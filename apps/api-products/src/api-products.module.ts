@@ -1,3 +1,4 @@
+import { RolesGuard } from '@app/shared/_guards/roles.guard'
 import { Product } from '@app/shared/entities/product.entity'
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
@@ -6,7 +7,6 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserMiddleware } from 'apps/api-products/src/_middlewares/user.middleware'
 import { ApiProductsController } from './api-products.controller'
 import { ApiProductsService } from './api-products.service'
-import { RolesGuard } from './_guards/roles.guard'
 
 @Module({
 	imports: [
