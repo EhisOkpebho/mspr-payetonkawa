@@ -19,7 +19,7 @@ export class UserMiddleware implements NestMiddleware {
 		const configTrustKey = this.configService.get<string>(`MS_${(trustId + '').toUpperCase()}_TRUST_KEY`)
 
 		if (trustKeyHeader && configTrustKey && trustKeyHeader === configTrustKey && trustId) {
-			this.logger.debug(`Found trust key (${trustKeyHeader})  and ID (${trustId}) in headers`)
+			this.logger.debug(`Found trust key (${trustKeyHeader}) and ID (${trustId}) in headers`)
 			const now = new Date()
 			const placeholderUser: User = {
 				id: 0,

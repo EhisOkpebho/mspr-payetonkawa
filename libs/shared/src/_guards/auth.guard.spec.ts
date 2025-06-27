@@ -1,36 +1,38 @@
+import { AuthGuard } from './auth.guard'
 import { ExecutionContext, ForbiddenException } from '@nestjs/common'
-import { AuthGuard } from 'libs/shared/src/_guards/auth.guard'
 
 describe('AuthGuard', () => {
 	let guard: AuthGuard
+	let mockContext: ExecutionContext
 
 	beforeEach(() => {
 		guard = new AuthGuard()
-	})
-
-	function createContext(user?: any): ExecutionContext {
-		return {
-			switchToHttp: () => ({
-				getRequest: () => ({ user }),
-			}),
-			switchToRpc: jest.fn(),
-			switchToWs: jest.fn(),
-			getArgByIndex: jest.fn(),
-			getArgs: jest.fn(),
-			getClass: jest.fn(),
-			getHandler: jest.fn(),
-			getType: jest.fn(),
-			getNext: jest.fn(),
+		mockContext = {
+			switchToHttp: jest.fn(),
 		} as unknown as ExecutionContext
-	}
-
-	it('should return true when user is present', () => {
-		const context = createContext({ id: 1 })
-		expect(guard.canActivate(context)).toBe(true)
 	})
 
-	it('should throw ForbiddenException when user is absent', () => {
-		const context = createContext()
-		expect(() => guard.canActivate(context)).toThrow(ForbiddenException)
+	it('should allow access if user is authenticated', () => {
+		const mockRequest = { user: { id: 1, name: 'John' } }
+
+		const mockHttp = {
+			getRequest: jest.fn().mockReturnValue(mockRequest),
+		}
+
+		jest.spyOn(mockContext, 'switchToHttp').mockReturnValue(mockHttp as any)
+
+		expect(guard.canActivate(mockContext)).toBe(true)
+	})
+
+	it('should throw ForbiddenException if user is not authenticated', () => {
+		const mockRequest = {}
+
+		const mockHttp = {
+			getRequest: jest.fn().mockReturnValue(mockRequest),
+		}
+
+		jest.spyOn(mockContext, 'switchToHttp').mockReturnValue(mockHttp as any)
+
+		expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException)
 	})
 })
