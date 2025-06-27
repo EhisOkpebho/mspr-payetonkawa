@@ -1,5 +1,5 @@
 import { ExecutionContext, ForbiddenException } from '@nestjs/common'
-import { AuthGuard } from './auth.guard'
+import { AuthGuard } from 'libs/shared/src/_guards/auth.guard'
 
 describe('AuthGuard', () => {
 	let guard: AuthGuard

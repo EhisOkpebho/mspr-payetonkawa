@@ -1,13 +1,14 @@
 import { Roles } from '@app/shared/_decorators/roles.decorator'
 import { ReqUser } from '@app/shared/_decorators/user.decorator'
+import { AuthGuard } from '@app/shared/_guards/auth.guard'
 import { Order } from '@app/shared/entities/order.entity'
 import { User } from '@app/shared/entities/user.entity'
 import { CreateProductDTO, ProductDTO, UpdateProductDTO } from '@app/shared/types/dto/product.dto'
 import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
 import { EventPattern, Payload } from '@nestjs/microservices'
-import { AuthGuard } from './_guards/auth.guard'
 import { ApiProductsService } from './api-products.service'
 
+@UseGuards(AuthGuard)
 @Controller('products')
 export class ApiProductsController {
 	private readonly logger = new Logger(ApiProductsController.name)
@@ -26,7 +27,6 @@ export class ApiProductsController {
 		this.logger.log(`Stock updated for order ID: ${data.order.id}, (Stock: ${product.stock} -> ${res.stock})`)
 	}
 
-	@UseGuards(AuthGuard)
 	@Roles('admin', 'manager', 'distributor')
 	@Post()
 	create(@Body() product: CreateProductDTO, @ReqUser() user: User): Promise<ProductDTO> {
@@ -34,7 +34,6 @@ export class ApiProductsController {
 		return this.productsService.create(product)
 	}
 
-	@UseGuards(AuthGuard)
 	@Roles('admin', 'manager', 'distributor')
 	@Put('/:id')
 	update(@Param('id', ParseIntPipe) id: number, @Body() product: UpdateProductDTO, @ReqUser() user: User): Promise<ProductDTO> {
@@ -42,7 +41,6 @@ export class ApiProductsController {
 		return this.productsService.update(id, product)
 	}
 
-	@UseGuards(AuthGuard)
 	@Roles('admin', 'manager', 'distributor')
 	@Delete('/:id')
 	delete(@Param('id', ParseIntPipe) id: number, @ReqUser() user: User): Promise<boolean> {
@@ -50,18 +48,17 @@ export class ApiProductsController {
 		return this.productsService.delete(id)
 	}
 
-	@UseGuards(AuthGuard)
-	@Roles('admin', 'manager')
+	@Roles('admin', 'manager', 'customer')
 	@Get()
 	findAll(@ReqUser() user: User): Promise<ProductDTO[]> {
 		this.logger.log(`GET /products by user ${user.id}`)
 		return this.productsService.findAll()
 	}
 
-	@UseGuards(AuthGuard)
-	@Roles('admin', 'manager', 'distributor')
+	@Roles('api_orders', 'admin', 'manager', 'distributor', 'customer')
 	@Get('/:id')
 	findById(@Param('id', ParseIntPipe) id: number, @ReqUser() user: User): Promise<ProductDTO> {
+		// TODO: function prettyUser that returns a string with user info (id, user, mail) if user is undefined, it should be a request from another microservice
 		this.logger.log(`GET /products/${id} by user ${user.id}`)
 		return this.productsService.findById(id)
 	}

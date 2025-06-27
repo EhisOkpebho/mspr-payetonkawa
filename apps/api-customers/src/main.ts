@@ -36,7 +36,7 @@ async function bootstrap() {
 	)
 
 	await app.startAllMicroservices()
-	await app.listen(3000)
+	await app.listen(process.env.MS_API_CUSTOMERS_PORT)
 }
 
 bootstrap()

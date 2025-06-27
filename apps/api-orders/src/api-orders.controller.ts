@@ -1,11 +1,11 @@
+import { Roles } from '@app/shared/_decorators/roles.decorator'
+import { ReqUser } from '@app/shared/_decorators/user.decorator'
+import { AuthGuard } from '@app/shared/_guards/auth.guard'
 import { Order } from '@app/shared/entities/order.entity'
+import { User } from '@app/shared/entities/user.entity'
 import { CreateOrderDto } from '@app/shared/types/dto/order.dto'
 import { Body, Controller, Get, Logger, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiOrdersService } from './api-orders.service'
-import { AuthGuard } from './_guards/auth.guard'
-import { Roles } from '@app/shared/_decorators/roles.decorator'
-import { ReqUser } from '@app/shared/_decorators/user.decorator'
-import { User } from '@app/shared/entities/user.entity'
 
 @UseGuards(AuthGuard)
 @Controller('orders')

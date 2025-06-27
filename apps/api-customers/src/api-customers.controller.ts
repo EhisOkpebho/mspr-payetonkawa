@@ -1,10 +1,10 @@
+import { Roles } from '@app/shared/_decorators/roles.decorator'
+import { ReqUser } from '@app/shared/_decorators/user.decorator'
+import { AuthGuard } from '@app/shared/_guards/auth.guard'
+import { User } from '@app/shared/entities/user.entity'
 import { CreateCustomerDTO, CustomerDTO, UpdateCustomerDTO } from '@app/shared/types/dto/customer.dto'
 import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
 import { ApiCustomersService } from './api-customers.service'
-import { AuthGuard } from './_guards/auth.guard'
-import { User } from '@app/shared/entities/user.entity'
-import { ReqUser } from '@app/shared/_decorators/user.decorator'
-import { Roles } from '@app/shared/_decorators/roles.decorator'
 
 @UseGuards(AuthGuard)
 @Controller('customers')

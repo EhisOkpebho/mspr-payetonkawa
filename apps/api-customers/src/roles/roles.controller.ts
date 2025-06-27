@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
-import { RolesService } from './roles.service'
-import { CreateUserRoleDto } from 'libs/shared/src/types/dto/user-role.dto'
-import { AuthGuard } from '../_guards/auth.guard'
-import { User } from '@app/shared/entities/user.entity'
-import { ReqUser } from '@app/shared/_decorators/user.decorator'
 import { Roles } from '@app/shared/_decorators/roles.decorator'
+import { ReqUser } from '@app/shared/_decorators/user.decorator'
+import { AuthGuard } from '@app/shared/_guards/auth.guard'
+import { User } from '@app/shared/entities/user.entity'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
+import { CreateUserRoleDto } from 'libs/shared/src/types/dto/user-role.dto'
+import { RolesService } from './roles.service'
 
 @Roles('admin')
 @UseGuards(AuthGuard)

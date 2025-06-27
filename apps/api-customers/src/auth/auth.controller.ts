@@ -1,10 +1,10 @@
+import { ReqUser } from '@app/shared/_decorators/user.decorator'
+import { AuthGuard } from '@app/shared/_guards/auth.guard'
 import { User } from '@app/shared/entities/user.entity'
 import { Body, Controller, Get, HttpStatus, Logger, Post, Req, Res, UseGuards } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Request, Response } from 'express'
 import { AuthService } from './auth.service'
-import { AuthGuard } from '../_guards/auth.guard'
-import { ReqUser } from '@app/shared/_decorators/user.decorator'
 
 @Controller('auth')
 export class AuthController {

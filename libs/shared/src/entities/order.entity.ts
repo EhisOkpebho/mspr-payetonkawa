@@ -1,7 +1,5 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
-// TODO: add relations to customer and product entities instead of just ids
-
 @Entity()
 export class Order {
 	@PrimaryGeneratedColumn('identity')
