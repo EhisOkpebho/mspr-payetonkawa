@@ -95,6 +95,10 @@
     ],
     "moduleNameMapper": {
       "^@app/shared(|/.*)$": "<rootDir>/libs/shared/src/$1"
-    }
+    },
+    "coveragePathIgnorePatterns": [
+      ".*\\.e2e-spec\\.ts$",
+      "main\\.ts$"
+    ]
   }
 }
