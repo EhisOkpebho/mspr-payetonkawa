@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ApiCustomersModule } from './api-customers.module'
 import { APP_GUARD } from '@nestjs/core'
-import { RolesGuard } from './_guards/roles.guard'
 import { UserMiddleware } from './_middlewares/user.middleware'
 import { MiddlewareConsumer, RequestMethod } from '@nestjs/common'
+import { RolesGuard } from '@app/shared/_guards/roles.guard'
 
 describe('ApiCustomersModule', () => {
 	let moduleRef: TestingModule
