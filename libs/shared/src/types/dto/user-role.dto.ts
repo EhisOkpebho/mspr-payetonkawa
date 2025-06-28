@@ -1,4 +1,9 @@
-export type CreateUserRoleDto = {
-	userId: number
-	roleId: number
+import { IsNumber } from 'class-validator';
+
+export class CreateUserRoleDto {
+  @IsNumber()
+  userId: number;
+
+  @IsNumber()
+  roleId: number;
 }
