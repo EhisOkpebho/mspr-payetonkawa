@@ -1,11 +1,16 @@
-// Todo: use a class-validator DTO for validation
+import { IsNumber, IsOptional, Min } from 'class-validator';
 
-export type CreateOrderDto = {
-	productId: number
-	quantity?: number
-	customerId?: number
+export class CreateOrderDto {
+  @IsNumber()
+  productId: number;
+
+  @IsOptional()
+  @IsNumber()
+  quantity?: number;
+
+  @IsOptional()
+  @IsNumber()
+  customerId?: number;
 }
-
-// Todo: use a class-validator DTO for validation
 
 export type UpdateOrderDto = Partial<CreateOrderDto>
