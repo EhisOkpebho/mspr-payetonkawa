@@ -9,6 +9,7 @@ describe('AuthGuard', () => {
 		guard = new AuthGuard()
 		mockContext = {
 			switchToHttp: jest.fn(),
+			getType: jest.fn().mockResolvedValue('http'),
 		} as unknown as ExecutionContext
 	})
 

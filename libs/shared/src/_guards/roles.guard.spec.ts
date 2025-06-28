@@ -13,6 +13,7 @@ describe('RolesGuard', () => {
 			switchToHttp: () => ({ getRequest }),
 			getHandler: jest.fn(),
 			getClass: jest.fn(),
+			getType: jest.fn().mockResolvedValue('http'),
 		} as unknown as ExecutionContext
 	}
 
@@ -47,6 +48,7 @@ describe('RolesGuard', () => {
 			switchToHttp: () => ({ getRequest: () => ({}) }),
 			getHandler: jest.fn(),
 			getClass: jest.fn(),
+			getType: jest.fn().mockResolvedValue('http'),
 		} as unknown as ExecutionContext
 
 		jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(['admin'])
