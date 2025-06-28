@@ -1,21 +1,28 @@
-import { IsString, IsNumber, IsOptional, IsNotEmpty, ValidateNested, Min } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsNotEmpty, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
-class ProductDetailsDTO {
+export class ProductDTO {
   @IsNumber()
-  price: number;
+  id: number;
 
   @IsString()
-  @IsNotEmpty()
-  description: string;
+  name: string;
 
-  @IsString()
-  @IsNotEmpty()
-  color: string;
+  @ValidateNested()
+  @Type(() => detailsDTO)
+  details: detailsDTO;
+
+  @IsNumber()
+  stock: number;
+
+  @Type(() => Date)
+  createdAt: Date;
+
+  @Type(() => Date)
+  updatedAt: Date;
 }
 
-
-class UpdateProductDetailsDTO {
+class detailsDTO {
   @IsOptional()
   @IsNumber()
   price?: number;
@@ -29,14 +36,15 @@ class UpdateProductDetailsDTO {
   color?: string;
 }
 
+
 export class CreateProductDTO {
   @IsString()
   @IsNotEmpty()
   name: string;
 
   @ValidateNested()
-  @Type(() => ProductDetailsDTO)
-  details: ProductDetailsDTO;
+  @Type(() => detailsDTO)
+  details: detailsDTO;
 
   @IsNumber()
   stock: number;
@@ -49,8 +57,8 @@ export class UpdateProductDTO {
 
   @IsOptional()
   @ValidateNested()
-  @Type(() => UpdateProductDetailsDTO)
-  details?: UpdateProductDetailsDTO;
+  @Type(() => detailsDTO)
+  details?: detailsDTO;
 
   @IsOptional()
   @IsNumber()
