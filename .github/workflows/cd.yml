@@ -20,15 +20,21 @@ jobs:
 
       - name: Build and push api-customers
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/api-customers -f apps/api-customers/Dockerfile apps/api-customers
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/api-customers \
+            -f apps/api-customers/Dockerfile \
+            .
           docker push ${{ secrets.DOCKER_USERNAME }}/api-customers
 
       - name: Build and push api-orders
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/api-orders -f apps/api-orders/Dockerfile apps/api-orders
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/api-orders \
+            -f apps/api-orders/Dockerfile \
+            .
           docker push ${{ secrets.DOCKER_USERNAME }}/api-orders
 
       - name: Build and push api-products
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/api-products -f apps/api-products/Dockerfile apps/api-products
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/api-products \
+            -f apps/api-products/Dockerfile \
+            .
           docker push ${{ secrets.DOCKER_USERNAME }}/api-products
