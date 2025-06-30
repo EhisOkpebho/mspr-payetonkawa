@@ -1,0 +1,35 @@
+name: CI for Microservices
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build api-customers
+        run: npm run build:api-customers
+
+      - name: Build api-orders
+        run: npm run build:api-orders
+
+      - name: Build api-products
+        run: npm run build:api-products
+
+      # Tu peux ajouter des tests ici :
+      # - name: Run tests
+      #   run: npm run test

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity()
 export class Order {
@@ -10,6 +10,9 @@ export class Order {
 
 	@Column({ type: 'int' })
 	productId: number
+
+	@Column({ type: 'int', default: 1 })
+	quantity: number
 
 	@CreateDateColumn()
 	createdAt: Date

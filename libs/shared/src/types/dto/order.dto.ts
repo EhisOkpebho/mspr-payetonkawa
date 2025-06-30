@@ -1,10 +1,16 @@
-export type FindOrderByIdDto = {
-	id: number
-}
+import { IsNumber, IsOptional, Min } from 'class-validator';
 
-export type CreateOrderDto = {
-	customerId: number
-	productId: number
+export class CreateOrderDto {
+  @IsNumber()
+  productId: number;
+
+  @IsOptional()
+  @IsNumber()
+  quantity?: number;
+
+  @IsOptional()
+  @IsNumber()
+  customerId?: number;
 }
 
 export type UpdateOrderDto = Partial<CreateOrderDto>
