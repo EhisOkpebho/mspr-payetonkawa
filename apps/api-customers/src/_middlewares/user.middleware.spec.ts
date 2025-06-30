@@ -4,9 +4,11 @@ import { RolesService } from '../roles/roles.service'
 import { User } from '@app/shared/entities/user.entity'
 import { NextFunction, Request, Response } from 'express'
 import { Repository } from 'typeorm'
+import { ConfigService } from '@nestjs/config'
 
 describe('UserMiddleware', () => {
 	let middleware: UserMiddleware
+	let configService: Partial<ConfigService>
 	let authService: Partial<AuthService>
 	let rolesService: Partial<RolesService>
 	let userRepository: Partial<Repository<User>>
@@ -15,6 +17,10 @@ describe('UserMiddleware', () => {
 	let next: NextFunction
 
 	beforeEach(() => {
+		configService = {
+			get: jest.fn().mockResolvedValue('valid-key'),
+		}
+
 		authService = {
 			verifyToken: jest.fn(),
 		}
@@ -27,10 +33,18 @@ describe('UserMiddleware', () => {
 			findOne: jest.fn(),
 		}
 
-		middleware = new UserMiddleware(authService as AuthService, userRepository as Repository<User>, rolesService as RolesService)
+		middleware = new UserMiddleware(
+			configService as ConfigService,
+			authService as AuthService,
+			userRepository as Repository<User>,
+			rolesService as RolesService,
+		)
 
 		req = {
 			cookies: {},
+			headers: {
+				ms_trust_key: 'MS_TRUST_KEY',
+			},
 		}
 		res = {}
 		next = jest.fn()

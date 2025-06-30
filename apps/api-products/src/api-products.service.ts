@@ -2,8 +2,8 @@ import { Product } from '@app/shared/entities/product.entity'
 import { CreateProductDTO, ProductDTO, UpdateProductDTO } from '@app/shared/types/dto/product.dto'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { toProductDTO, toProductEntity } from 'apps/api-products/src/api-products.mapper'
 import { Repository } from 'typeorm'
+import { toProductDTO, toProductEntity } from './api-products.mapper'
 
 @Injectable()
 export class ApiProductsService {
