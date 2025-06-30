@@ -18,7 +18,7 @@ export class ApiOrdersController {
 	@Post()
 	create(@Body() order: CreateOrderDto, @ReqUser() user: User): Promise<Order> {
 		this.logger.log('POST /orders')
-		return this.ordersService.create({ ...order, customerId: user.id })
+		return this.ordersService.create({ ...order, customerId: user.customer ? user.customer.id : null })
 	}
 
 	@Roles('admin', 'manager')

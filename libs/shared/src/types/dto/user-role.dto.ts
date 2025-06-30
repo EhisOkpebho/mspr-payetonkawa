@@ -1,9 +1,8 @@
-import { IsNumber } from 'class-validator';
+import { IsNumber } from 'class-validator'
 
 export class CreateUserRoleDto {
-  @IsNumber()
-  userId: number;
+	@IsNumber()
+	userId: number
 
-  @IsNumber()
-  roleId: number;
+	roleId: string | number
 }

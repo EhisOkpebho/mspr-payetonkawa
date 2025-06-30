@@ -1,10 +1,10 @@
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
-import { CreateUserRoleDto } from 'libs/shared/src/types/dto/user-role.dto'
-import { UserRole } from '@app/shared/entities/user-role.entity'
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { Role } from '@app/shared/entities/role.entity'
+import { UserRole } from '@app/shared/entities/user-role.entity'
 import { User } from '@app/shared/entities/user.entity'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { CreateUserRoleDto } from 'libs/shared/src/types/dto/user-role.dto'
+import { Repository } from 'typeorm'
 
 @Injectable()
 export class RolesService {
@@ -24,8 +24,11 @@ export class RolesService {
 	async createPermission(dto: CreateUserRoleDto, grantedBy?: User) {
 		const user = await this.userRepo.findOneBy({ id: dto.userId })
 		if (!user) throw new BadRequestException('User not found')
-		const role = await this.roleRepo.findOneBy({ id: dto.roleId })
+
+		const role = await this.roleRepo.findOneBy(typeof dto.roleId === 'number' ? { id: dto.roleId } : { name: dto.roleId })
+
 		if (!role) throw new BadRequestException('Role not found')
+
 		const userRole = this.userRoleRepo.create({
 			user,
 			role,
