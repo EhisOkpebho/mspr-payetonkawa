@@ -1,10 +1,11 @@
 import { Customer } from '@app/shared/entities/customer.entity'
+import { User } from '@app/shared/entities/user.entity'
 import { CreateCustomerDTO, CustomerDTO, UpdateCustomerDTO } from '@app/shared/types/dto/customer.dto'
+import { hasRole } from '@app/shared/utils/roles.utils'
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { RolesService } from 'apps/api-customers/src/roles/roles.service'
 import { Repository } from 'typeorm'
-import { User } from '@app/shared/entities/user.entity'
-import { hasRole } from '@app/shared/utils/roles.utils'
 import { toCustomerDTO, toCustomerEntity } from './api-customers.mapper'
 
 @Injectable()
@@ -12,6 +13,7 @@ export class ApiCustomersService {
 	constructor(
 		@InjectRepository(Customer)
 		private readonly customerRepository: Repository<Customer>,
+		private readonly rolesService: RolesService,
 	) {}
 
 	async create(customer: CreateCustomerDTO, user: User): Promise<CustomerDTO> {
@@ -22,6 +24,7 @@ export class ApiCustomersService {
 			...toCustomerEntity(customer as unknown as CustomerDTO),
 			user,
 		})
+		await this.rolesService.createPermission({ roleId: 'customer', userId: user.id })
 		return toCustomerDTO(created)
 	}
 

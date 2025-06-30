@@ -2,7 +2,7 @@ import { Order } from '@app/shared/entities/order.entity'
 import { CreateOrderDto } from '@app/shared/types/dto/order.dto'
 import { ProductDTO } from '@app/shared/types/dto/product.dto'
 import { HttpService } from '@nestjs/axios'
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ClientProxy } from '@nestjs/microservices'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -49,6 +49,10 @@ export class ApiOrdersService {
 	// }
 
 	async create(dto: CreateOrderDto): Promise<Order> {
+		if (!dto.customerId) {
+			throw new ForbiddenException('User does not have a customer profile')
+		}
+
 		const trustKey = this.configService.get<string>('MS_API_ORDERS_TRUST_KEY')
 		const servicePort = this.configService.get<string>('MS_API_PRODUCTS_PORT') || '3002'
 

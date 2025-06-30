@@ -38,6 +38,7 @@ export class ApiOrdersController {
 			end({ status: '500' })
 			throw e
 		}
+		return this.ordersService.create({ ...order, customerId: user.customer ? user.customer.id : null })
 	}
 
 	@Roles('admin', 'manager')

@@ -3,7 +3,7 @@ import { ConflictException, Inject, Injectable, UnauthorizedException } from '@n
 import { ConfigService } from '@nestjs/config'
 import { JwtService, JwtVerifyOptions } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
-import * as bcrypt from 'bcrypt'
+import * as argon2 from 'argon2'
 import { Repository } from 'typeorm'
 import { RolesService } from '../roles/roles.service'
 
@@ -74,12 +74,15 @@ export class AuthService {
 	}
 
 	async hashPassword(password: string): Promise<string> {
-		const saltRounds = 10
-		return await bcrypt.hash(password, saltRounds)
+		return await argon2.hash(password)
 	}
 
 	async comparePassword(password: string, hash: string): Promise<boolean> {
-		return await bcrypt.compare(password, hash)
+		try {
+			return await argon2.verify(hash, password)
+		} catch {
+			return false
+		}
 	}
 
 	generateToken(user: User): string {
