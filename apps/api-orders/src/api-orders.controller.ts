@@ -28,17 +28,13 @@ export class ApiOrdersController {
 		this.logger.log('POST /orders')
 		const end = this.requestDuration.startTimer({ method: 'POST', route: '/orders' })
 		try {
-			const result = await this.ordersService.create({
-				...order,
-				customerId: user.id,
-			})
+			const result = await this.ordersService.create({ ...order, customerId: user.customer ? user.customer.id : null })
 			end({ status: '201' })
 			return result
 		} catch (e) {
 			end({ status: '500' })
 			throw e
 		}
-		return this.ordersService.create({ ...order, customerId: user.customer ? user.customer.id : null })
 	}
 
 	@Roles('admin', 'manager')
