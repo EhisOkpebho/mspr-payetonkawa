@@ -1,121 +1,122 @@
-import { IsString, IsNumber, IsOptional, IsNotEmpty, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type } from 'class-transformer'
+import { IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator'
 
+class AddressDTO {
+	@IsOptional()
+	@IsString()
+	postalCode?: string
 
-
-class addressDTO {
-  @IsOptional()
-  @IsString()
-  postalCode?: string;
-
-  @IsOptional()
-  @IsString()
-  city?: string;
+	@IsOptional()
+	@IsString()
+	city?: string
 }
 
+class ProfileDTO {
+	@IsOptional()
+	@IsString()
+	username?: string
 
-class profileDTO {
-  @IsOptional()
-  @IsString()
-  username?: string;
+	@IsOptional()
+	@IsString()
+	firstName?: string
 
-  @IsOptional()
-  @IsString()
-  firstName?: string;
+	@IsOptional()
+	@IsString()
+	lastName?: string
 }
 
-class companyDTO {
-  @IsOptional()
-  @IsString()
-  companyName?: string;
+class CompanyDTO {
+	@IsOptional()
+	@IsString()
+	companyName?: string
 }
 
 export class CustomerDTO {
-  @IsNumber()
-  id: number;
+	@IsNumber()
+	id: number
 
-  @IsString()
-  name: string;
+	@IsString()
+	name: string
 
-  @IsString()
-  username: string;
+	@IsString()
+	username: string
 
-  @IsString()
-  firstName: string;
+	@IsString()
+	firstName: string
 
-  @IsString()
-  lastName: string;
+	@IsString()
+	lastName: string
 
-  @ValidateNested()
-  @Type(() => addressDTO)
-  address: addressDTO;
+	@ValidateNested()
+	@Type(() => AddressDTO)
+	address: AddressDTO
 
-  @ValidateNested()
-  @Type(() => profileDTO)
-  profile: profileDTO;
+	@ValidateNested()
+	@Type(() => ProfileDTO)
+	profile: ProfileDTO
 
-  @ValidateNested()
-  @Type(() => companyDTO)
-  company: companyDTO;
+	@ValidateNested()
+	@Type(() => CompanyDTO)
+	company: CompanyDTO
 
-  @Type(() => Date)
-  createdAt: Date;
+	@Type(() => Date)
+	createdAt: Date
 
-  @Type(() => Date)
-  updatedAt: Date;
+	@Type(() => Date)
+	updatedAt: Date
 }
 
 export class CreateCustomerDTO {
-  @IsString()
-  name: string;
+	@IsString()
+	name: string
 
-  @IsString()
-  username: string;
+	@IsString()
+	username: string
 
-  @IsString()
-  firstName: string;
+	@IsString()
+	firstName: string
 
-  @IsString()
-  lastName: string;
+	@IsString()
+	lastName: string
 
-  @ValidateNested()
-  @Type(() => addressDTO)
-  address: addressDTO;
+	@ValidateNested()
+	@Type(() => AddressDTO)
+	address: AddressDTO
 
-  @ValidateNested()
-  @Type(() => profileDTO)
-  profile: profileDTO;
+	@ValidateNested()
+	@Type(() => ProfileDTO)
+	profile: ProfileDTO
 
-  @ValidateNested()
-  @Type(() => companyDTO)
-  company: companyDTO;
+	@ValidateNested()
+	@Type(() => CompanyDTO)
+	company: CompanyDTO
 }
 
 export class UpdateCustomerDTO {
-  @IsOptional()
-  @IsString()
-  name?: string;
+	@IsOptional()
+	@IsString()
+	name?: string
 
-  @IsOptional()
-  @IsString()
-  firstName?: string;
+	@IsOptional()
+	@IsString()
+	firstName?: string
 
-  @IsOptional()
-  @IsString()
-  lastName?: string;
+	@IsOptional()
+	@IsString()
+	lastName?: string
 
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => addressDTO)
-  address?: addressDTO;
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => AddressDTO)
+	address?: AddressDTO
 
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => profileDTO)
-  profile?: profileDTO;
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => ProfileDTO)
+	profile?: ProfileDTO
 
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => companyDTO)
-  company?: companyDTO;
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => CompanyDTO)
+	company?: CompanyDTO
 }

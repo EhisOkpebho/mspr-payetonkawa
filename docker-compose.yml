@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   ptk_rabbitmq:
     image: rabbitmq:3-management
@@ -103,11 +105,46 @@ services:
     networks:
       - mspr-ptk
 
+  rabbitmq-exporter:
+    image: kbudde/rabbitmq-exporter
+    container_name: rabbitmq_exporter
+    environment:
+      RABBIT_URL: http://ptk_rabbitmq:15672
+      RABBIT_USER: admin
+      RABBIT_PASSWORD: admin
+    ports:
+      - "9419:9419"
+    depends_on:
+      - ptk_rabbitmq
+    networks:
+      - mspr-ptk
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - mspr-ptk
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3003:3000"
+    networks:
+      - mspr-ptk
+    volumes:
+      - grafana_data:/var/lib/grafana
+
 volumes:
   rabbitmq_data:
   pg_customers_data:
   pg_orders_data:
   pg_products_data:
+  grafana_data:
 
 networks:
   mspr-ptk:
