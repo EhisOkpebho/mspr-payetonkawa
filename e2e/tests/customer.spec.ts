@@ -6,7 +6,7 @@ import { Client } from 'pg'
 test.describe('API Customers', () => {
 	let api: APIRequestContext
 	const loginPayload = {
-		email: `${new Date().getTime()}-user@epsi.net`,
+		email: `${new Date().getTime()}-customer@epsi.net`,
 		password: 'admin123',
 	}
 	let user: User | undefined
