@@ -22,7 +22,7 @@ export class UserMiddleware implements NestMiddleware {
 			this.logger.debug(`Found trust key (${trustKeyHeader}) and ID (${trustId}) in headers`)
 			const now = new Date()
 			const placeholderUser: User = {
-				id: 0,
+				id: -1,
 				email: trustId,
 				password: '',
 				customer: null,

@@ -21,7 +21,7 @@ export class ApiOrdersController {
 		private readonly requestDuration: Histogram<'method' | 'route' | 'status'>,
 	) {}
 
-	@Roles('admin', 'customer')
+	@Roles('admin', 'distributor', 'customer')
 	@Post()
 	async create(@Body() order: CreateOrderDto, @ReqUser() user: User): Promise<Order> {
 		this.logger.log('POST /orders')
@@ -34,6 +34,13 @@ export class ApiOrdersController {
 			end({ status: '500' })
 			throw e
 		}
+	}
+
+	@Roles('admin', 'distributor', 'customer')
+	@Get('me')
+	findMyOrders(@ReqUser() user: User): Promise<Order[]> {
+		this.logger.log(`GET /orders/me for user ${user.id}`)
+		return this.ordersService.findByCustomerId(user.customer ? user.customer.id : null)
 	}
 
 	@Roles('admin', 'manager')
@@ -51,7 +58,7 @@ export class ApiOrdersController {
 		}
 	}
 
-	@Roles('admin', 'manager', 'customer')
+	@Roles('admin', 'manager')
 	@Get('/:id')
 	async findById(@Param('id', ParseIntPipe) id: number): Promise<Order> {
 		this.logger.log(`GET /orders/${id}`)

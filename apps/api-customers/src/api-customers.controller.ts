@@ -26,6 +26,7 @@ export class ApiCustomersController {
 		return result
 	}
 
+	@Roles('admin', 'customer')
 	@Put('/:id')
 	async update(@Param('id', ParseIntPipe) id: number, @Body() customer: UpdateCustomerDTO, @ReqUser() user: User): Promise<CustomerDTO> {
 		const end = this.requestDurationHistogram.startTimer({ route: 'PUT /customers/:id' })
@@ -34,6 +35,7 @@ export class ApiCustomersController {
 		return result
 	}
 
+	@Roles('admin', 'customer')
 	@Delete('/:id')
 	async delete(@Param('id', ParseIntPipe) id: number, @ReqUser() user: User): Promise<boolean> {
 		const end = this.requestDurationHistogram.startTimer({ route: 'DELETE /customers/:id' })

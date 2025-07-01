@@ -35,7 +35,7 @@ export class ApiProductsController {
 		this.logger.log(`Stock updated for order ID: ${data.order.id}, (Stock: ${product.stock} -> ${res.stock})`)
 	}
 
-	@Roles('admin', 'manager', 'distributor')
+	@Roles('admin', 'manager')
 	@Post()
 	async create(@Body() product: CreateProductDTO, @ReqUser() user: User): Promise<ProductDTO> {
 		const end = this.requestDuration.startTimer({ method: 'POST', route: '/products' })
@@ -50,7 +50,7 @@ export class ApiProductsController {
 		}
 	}
 
-	@Roles('admin', 'manager', 'distributor')
+	@Roles('admin', 'manager')
 	@Put('/:id')
 	async update(@Param('id', ParseIntPipe) id: number, @Body() product: UpdateProductDTO, @ReqUser() user: User): Promise<ProductDTO> {
 		const end = this.requestDuration.startTimer({ method: 'PUT', route: '/products/:id' })
@@ -65,7 +65,7 @@ export class ApiProductsController {
 		}
 	}
 
-	@Roles('admin', 'manager', 'distributor')
+	@Roles('admin', 'manager')
 	@Delete('/:id')
 	async delete(@Param('id', ParseIntPipe) id: number, @ReqUser() user: User): Promise<boolean> {
 		const end = this.requestDuration.startTimer({ method: 'DELETE', route: '/products/:id' })
@@ -80,7 +80,7 @@ export class ApiProductsController {
 		}
 	}
 
-	@Roles('admin', 'manager', 'customer')
+	@Roles('admin', 'manager')
 	@Get()
 	async findAll(@ReqUser() user: User): Promise<ProductDTO[]> {
 		const end = this.requestDuration.startTimer({ method: 'GET', route: '/products' })
@@ -95,7 +95,7 @@ export class ApiProductsController {
 		}
 	}
 
-	@Roles('api_orders', 'admin', 'manager', 'distributor', 'customer')
+	@Roles('api_orders', 'admin', 'manager', 'customer')
 	@Get('/:id')
 	async findById(@Param('id', ParseIntPipe) id: number, @ReqUser() user: User): Promise<ProductDTO> {
 		const end = this.requestDuration.startTimer({ method: 'GET', route: '/products/:id' })
