@@ -15,7 +15,7 @@ export class ApiCustomersController {
 
 	constructor(
 		private readonly customersService: ApiCustomersService,
-		@InjectMetric('api_customers_request_duration_seconds')
+		@InjectMetric('HTTP_REQUEST_DURATION_SECONDS')
 		private readonly requestDurationHistogram: Histogram,
 	) {}
 	@Post()

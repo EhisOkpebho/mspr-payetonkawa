@@ -6,21 +6,20 @@ import { User } from '@app/shared/entities/user.entity'
 import { CreateOrderDto } from '@app/shared/types/dto/order.dto'
 import { Body, Controller, Get, Logger, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
 import { ApiOrdersService } from './api-orders.service'
-import * as client from 'prom-client'
+
+import { InjectMetric } from '@willsoto/nestjs-prometheus'
+import { Histogram } from 'prom-client'
 
 @UseGuards(AuthGuard)
 @Controller('orders')
 export class ApiOrdersController {
 	private readonly logger = new Logger(ApiOrdersController.name)
 
-	constructor(private readonly ordersService: ApiOrdersService) {}
-
-	private readonly requestDuration = new client.Histogram({
-		name: 'http_request_duration_seconds_orders',
-		help: 'Duration of /orders HTTP requests in seconds',
-		labelNames: ['method', 'route', 'status'] as const,
-		buckets: [0.1, 0.5, 1, 2, 5],
-	})
+	constructor(
+		private readonly ordersService: ApiOrdersService,
+		@InjectMetric('HTTP_REQUEST_DURATION_SECONDS')
+		private readonly requestDuration: Histogram<'method' | 'route' | 'status'>,
+	) {}
 
 	@Roles('admin', 'customer')
 	@Post()

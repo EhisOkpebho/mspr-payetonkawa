@@ -7,21 +7,19 @@ import { CreateProductDTO, ProductDTO, UpdateProductDTO } from '@app/shared/type
 import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common'
 import { EventPattern, Payload } from '@nestjs/microservices'
 import { ApiProductsService } from './api-products.service'
-import * as client from 'prom-client'
+import { InjectMetric } from '@app/shared/metrics/decorators/inject-metric.decorator'
+import { Histogram } from 'prom-client'
 
 @UseGuards(AuthGuard)
 @Controller('products')
 export class ApiProductsController {
 	private readonly logger = new Logger(ApiProductsController.name)
 
-	constructor(private readonly productsService: ApiProductsService) {}
-
-	private readonly requestDuration = new client.Histogram({
-		name: 'http_request_duration_seconds_products',
-		help: 'Duration of /products HTTP requests in seconds',
-		labelNames: ['method', 'route', 'status'] as const,
-		buckets: [0.1, 0.5, 1, 2, 5],
-	})
+	constructor(
+		private readonly productsService: ApiProductsService,
+		@InjectMetric('HTTP_REQUEST_DURATION_SECONDS')
+		private readonly requestDuration: Histogram<'method' | 'route' | 'status'>,
+	) {}
 
 	@EventPattern('order.created')
 	async handleOrderCreated(@Payload() data: { order: Order }) {
@@ -40,50 +38,75 @@ export class ApiProductsController {
 	@Roles('admin', 'manager', 'distributor')
 	@Post()
 	async create(@Body() product: CreateProductDTO, @ReqUser() user: User): Promise<ProductDTO> {
-		const end = this.requestDuration.startTimer({ method: 'POST', route: '/products', status: '201' })
+		const end = this.requestDuration.startTimer({ method: 'POST', route: '/products' })
 		this.logger.log(`POST /products by user ${user.id}`)
-		const result = await this.productsService.create(product)
-		end()
-		return result
+		try {
+			const result = await this.productsService.create(product)
+			end({ status: '201' })
+			return result
+		} catch (e) {
+			end({ status: '500' })
+			throw e
+		}
 	}
 
 	@Roles('admin', 'manager', 'distributor')
 	@Put('/:id')
 	async update(@Param('id', ParseIntPipe) id: number, @Body() product: UpdateProductDTO, @ReqUser() user: User): Promise<ProductDTO> {
-		const end = this.requestDuration.startTimer({ method: 'PUT', route: '/products/:id', status: '200' })
+		const end = this.requestDuration.startTimer({ method: 'PUT', route: '/products/:id' })
 		this.logger.log(`PUT /products/${id} by user ${user.id}`)
-		const result = await this.productsService.update(id, product)
-		end()
-		return result
+		try {
+			const result = await this.productsService.update(id, product)
+			end({ status: '200' })
+			return result
+		} catch (e) {
+			end({ status: '500' })
+			throw e
+		}
 	}
 
 	@Roles('admin', 'manager', 'distributor')
 	@Delete('/:id')
 	async delete(@Param('id', ParseIntPipe) id: number, @ReqUser() user: User): Promise<boolean> {
-		const end = this.requestDuration.startTimer({ method: 'DELETE', route: '/products/:id', status: '200' })
+		const end = this.requestDuration.startTimer({ method: 'DELETE', route: '/products/:id' })
 		this.logger.log(`DELETE /products/${id} by user ${user.id}`)
-		const result = await this.productsService.delete(id)
-		end()
-		return result
+		try {
+			const result = await this.productsService.delete(id)
+			end({ status: '200' })
+			return result
+		} catch (e) {
+			end({ status: '500' })
+			throw e
+		}
 	}
 
 	@Roles('admin', 'manager', 'customer')
 	@Get()
 	async findAll(@ReqUser() user: User): Promise<ProductDTO[]> {
-		const end = this.requestDuration.startTimer({ method: 'GET', route: '/products', status: '200' })
+		const end = this.requestDuration.startTimer({ method: 'GET', route: '/products' })
 		this.logger.log(`GET /products by user ${user.id}`)
-		const result = await this.productsService.findAll()
-		end()
-		return result
+		try {
+			const result = await this.productsService.findAll()
+			end({ status: '200' })
+			return result
+		} catch (e) {
+			end({ status: '500' })
+			throw e
+		}
 	}
+
 	@Roles('api_orders', 'admin', 'manager', 'distributor', 'customer')
 	@Get('/:id')
 	async findById(@Param('id', ParseIntPipe) id: number, @ReqUser() user: User): Promise<ProductDTO> {
-		// TODO: function prettyUser that returns a string with user info (id, user, mail) if user is undefined, it should be a request from another microservice
-		const end = this.requestDuration.startTimer({ method: 'GET', route: '/products/:id', status: '200' })
-		this.logger.log(`GET /products/${id} by user ${user.id}`)
-		const result = await this.productsService.findById(id)
-		end()
-		return result
+		const end = this.requestDuration.startTimer({ method: 'GET', route: '/products/:id' })
+		this.logger.log(`GET /products/${id} by user ${user?.id ?? 'microservice'}`)
+		try {
+			const result = await this.productsService.findById(id)
+			end({ status: '200' })
+			return result
+		} catch (e) {
+			end({ status: '404' })
+			throw e
+		}
 	}
 }

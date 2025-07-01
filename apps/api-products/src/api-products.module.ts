@@ -8,6 +8,7 @@ import { UserMiddleware } from 'apps/api-products/src/_middlewares/user.middlewa
 import { ApiProductsController } from './api-products.controller'
 import { ApiProductsService } from './api-products.service'
 import { PrometheusModule } from '@willsoto/nestjs-prometheus'
+import {MetricsModule} from "@app/shared/metrics/metrics.module";
 
 @Module({
 	imports: [
@@ -33,7 +34,7 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus'
 				signOptions: { expiresIn: configService.get<string>('JWT_ACCESS_EXPIRATION') || '15m' },
 			}),
 		}),
-		PrometheusModule.register(),
+		MetricsModule,
 	],
 	controllers: [ApiProductsController],
 	providers: [ApiProductsService, { provide: 'APP_GUARD', useClass: RolesGuard }],
