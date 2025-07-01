@@ -19,12 +19,14 @@ export class ApiCustomersController {
 		return this.customersService.create(customer, user)
 	}
 
+	@Roles('admin', 'customer')
 	@Put('/:id')
 	update(@Param('id', ParseIntPipe) id: number, @Body() customer: UpdateCustomerDTO, @ReqUser() user: User): Promise<CustomerDTO> {
 		this.logger.log(`PUT /customers/${id}`)
 		return this.customersService.update(id, customer, user)
 	}
 
+	@Roles('admin', 'customer')
 	@Delete('/:id')
 	delete(@Param('id', ParseIntPipe) id: number, @ReqUser() user: User): Promise<boolean> {
 		this.logger.log(`DELETE /customers/${id}`)

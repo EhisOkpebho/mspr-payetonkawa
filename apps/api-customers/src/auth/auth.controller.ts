@@ -60,6 +60,7 @@ export class AuthController {
 		res.json(user)
 	}
 
+	@UseGuards(AuthGuard)
 	@Post('logout')
 	logout(@Res() res: Response) {
 		this.logger.log(`POST /auth/logout`)
@@ -68,6 +69,7 @@ export class AuthController {
 		return res.status(HttpStatus.OK).json({ message: 'Logged out successfully' })
 	}
 
+	@UseGuards(AuthGuard)
 	@Post('refresh')
 	async refreshToken(@Req() req: Request, @Res() res: Response) {
 		this.logger.log(`POST /auth/refresh`)
