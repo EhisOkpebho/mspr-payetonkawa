@@ -27,35 +27,35 @@ export class ApiProductsController {
 		this.logger.log(`Stock updated for order ID: ${data.order.id}, (Stock: ${product.stock} -> ${res.stock})`)
 	}
 
-	@Roles('admin', 'manager', 'distributor')
+	@Roles('admin', 'manager')
 	@Post()
 	create(@Body() product: CreateProductDTO, @ReqUser() user: User): Promise<ProductDTO> {
 		this.logger.log(`POST /products by user ${user.id}`)
 		return this.productsService.create(product)
 	}
 
-	@Roles('admin', 'manager', 'distributor')
+	@Roles('admin', 'manager')
 	@Put('/:id')
 	update(@Param('id', ParseIntPipe) id: number, @Body() product: UpdateProductDTO, @ReqUser() user: User): Promise<ProductDTO> {
 		this.logger.log(`PUT /products/${id} by user ${user.id}`)
 		return this.productsService.update(id, product)
 	}
 
-	@Roles('admin', 'manager', 'distributor')
+	@Roles('admin', 'manager')
 	@Delete('/:id')
 	delete(@Param('id', ParseIntPipe) id: number, @ReqUser() user: User): Promise<boolean> {
 		this.logger.log(`DELETE /products/${id} by user ${user.id}`)
 		return this.productsService.delete(id)
 	}
 
-	@Roles('admin', 'manager', 'customer')
+	@Roles('admin', 'manager')
 	@Get()
 	findAll(@ReqUser() user: User): Promise<ProductDTO[]> {
 		this.logger.log(`GET /products by user ${user.id}`)
 		return this.productsService.findAll()
 	}
 
-	@Roles('api_orders', 'admin', 'manager', 'distributor', 'customer')
+	@Roles('api_orders', 'admin', 'manager', 'customer')
 	@Get('/:id')
 	findById(@Param('id', ParseIntPipe) id: number, @ReqUser() user: User): Promise<ProductDTO> {
 		// TODO: function prettyUser that returns a string with user info (id, user, mail) if user is undefined, it should be a request from another microservice
