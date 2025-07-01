@@ -14,9 +14,7 @@ import { AuthModule } from './auth/auth.module'
 import { AuthService } from './auth/auth.service'
 import { RolesModule } from './roles/roles.module'
 import { RolesService } from './roles/roles.service'
-import { PrometheusModule } from '@willsoto/nestjs-prometheus'
-import {MetricsModule} from "@app/shared/metrics/metrics.module";
-
+import { MetricsModule } from '@app/shared/metrics/metrics.module'
 
 @Module({
 	imports: [

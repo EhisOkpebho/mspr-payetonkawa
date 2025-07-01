@@ -9,7 +9,6 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserMiddleware } from './_middlewares/user.middleware'
 import { ApiOrdersController } from './api-orders.controller'
 import { ApiOrdersService } from './api-orders.service'
-import { PrometheusModule } from '@willsoto/nestjs-prometheus'
 import { MetricsModule } from '@app/shared/metrics/metrics.module'
 
 @Module({

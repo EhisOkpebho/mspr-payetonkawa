@@ -7,8 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserMiddleware } from 'apps/api-products/src/_middlewares/user.middleware'
 import { ApiProductsController } from './api-products.controller'
 import { ApiProductsService } from './api-products.service'
-import { PrometheusModule } from '@willsoto/nestjs-prometheus'
-import {MetricsModule} from "@app/shared/metrics/metrics.module";
+import { MetricsModule } from '@app/shared/metrics/metrics.module'
 
 @Module({
 	imports: [
