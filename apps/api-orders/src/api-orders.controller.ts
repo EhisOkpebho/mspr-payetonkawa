@@ -5,29 +5,40 @@ import { Order } from '@app/shared/entities/order.entity'
 import { User } from '@app/shared/entities/user.entity'
 import { CreateOrderDto } from '@app/shared/types/dto/order.dto'
 import { Body, Controller, Get, Logger, Param, ParseIntPipe, Post, Res, UseGuards } from '@nestjs/common'
-import { Response } from 'express'
 import { ApiOrdersService } from './api-orders.service'
+import { Response } from 'express'
+import { InjectMetric } from '@willsoto/nestjs-prometheus'
+import { Histogram } from 'prom-client'
 
 @UseGuards(AuthGuard)
 @Controller('orders')
 export class ApiOrdersController {
 	private readonly logger = new Logger(ApiOrdersController.name)
 
-	constructor(private readonly ordersService: ApiOrdersService) {}
+	constructor(
+		private readonly ordersService: ApiOrdersService,
+		@InjectMetric('HTTP_REQUEST_DURATION_SECONDS')
+		private readonly requestDuration: Histogram<'method' | 'route' | 'status'>,
+	) {}
 
 	@Roles('admin', 'distributor', 'customer')
 	@Post()
-	async create(@Body() order: CreateOrderDto, @ReqUser() user: User, @Res() res: Response): Promise<void> {
+	async create(@Body() order: CreateOrderDto, @ReqUser() user: User, @Res() res: Response): Promise<void>  {
 		this.logger.log('POST /orders')
-		const pdfBuffer = await this.ordersService.create(order, user.customer)
-
-		res.set({
-			'Content-Type': 'application/pdf',
-			'Content-Disposition': 'attachment; filename="commande.pdf"',
-			'Content-Length': pdfBuffer.length,
-		})
-
-		res.send(pdfBuffer)
+		const end = this.requestDuration.startTimer({ method: 'POST', route: '/orders' })
+		try {
+			const pdfBuffer = await this.ordersService.create(order, user.customer)
+			res.set({
+				'Content-Type': 'application/pdf',
+				'Content-Disposition': 'attachment; filename="commande.pdf"',
+				'Content-Length': pdfBuffer.length,
+			})
+			end({ status: '201' })
+			res.send(pdfBuffer)
+		} catch (e) {
+			end({ status: '500' })
+			throw e
+		}
 	}
 
 	@Roles('admin', 'distributor', 'customer')
@@ -39,15 +50,31 @@ export class ApiOrdersController {
 
 	@Roles('admin', 'manager')
 	@Get()
-	findAll(): Promise<Order[]> {
+	async findAll(): Promise<Order[]> {
 		this.logger.log('GET /orders')
-		return this.ordersService.findAll()
+		const end = this.requestDuration.startTimer({ method: 'GET', route: '/orders' })
+		try {
+			const result = await this.ordersService.findAll()
+			end({ status: '200' })
+			return result
+		} catch (e) {
+			end({ status: '500' })
+			throw e
+		}
 	}
 
 	@Roles('admin', 'manager')
 	@Get('/:id')
-	findById(@Param('id', ParseIntPipe) id: number): Promise<Order> {
+	async findById(@Param('id', ParseIntPipe) id: number): Promise<Order> {
 		this.logger.log(`GET /orders/${id}`)
-		return this.ordersService.findById(id)
+		const end = this.requestDuration.startTimer({ method: 'GET', route: '/orders/:id' })
+		try {
+			const result = await this.ordersService.findById(id)
+			end({ status: '200' })
+			return result
+		} catch (e) {
+			end({ status: '404' })
+			throw e
+		}
 	}
 }

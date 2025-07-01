@@ -14,6 +14,7 @@ import { AuthModule } from './auth/auth.module'
 import { AuthService } from './auth/auth.service'
 import { RolesModule } from './roles/roles.module'
 import { RolesService } from './roles/roles.service'
+import { MetricsModule } from '@app/shared/metrics/metrics.module'
 
 @Module({
 	imports: [
@@ -40,11 +41,13 @@ import { RolesService } from './roles/roles.service'
 				signOptions: { expiresIn: configService.get<string>('JWT_ACCESS_EXPIRATION') || '15m' },
 			}),
 		}),
+
 		AuthModule,
 		RolesModule,
+		MetricsModule,
 	],
 	controllers: [ApiCustomersController],
-	providers: [ApiCustomersService, AuthService, RolesService, { provide: 'APP_GUARD', useClass: RolesGuard }],
+	providers: [ApiCustomersService, AuthService, RolesService, { provide: 'APP_GUARD', useClass: RolesGuard }, ],
 })
 export class ApiCustomersModule {
 	configure(consumer: MiddlewareConsumer) {

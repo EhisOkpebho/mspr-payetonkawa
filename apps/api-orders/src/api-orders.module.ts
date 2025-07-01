@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserMiddleware } from './_middlewares/user.middleware'
 import { ApiOrdersController } from './api-orders.controller'
 import { ApiOrdersService } from './api-orders.service'
+import { MetricsModule } from '@app/shared/metrics/metrics.module'
 
 @Module({
 	imports: [
@@ -58,6 +59,8 @@ import { ApiOrdersService } from './api-orders.service'
 				}),
 			},
 		]),
+
+		MetricsModule,
 	],
 	controllers: [ApiOrdersController],
 	providers: [ApiOrdersService, { provide: 'APP_GUARD', useClass: RolesGuard }],

@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserMiddleware } from 'apps/api-products/src/_middlewares/user.middleware'
 import { ApiProductsController } from './api-products.controller'
 import { ApiProductsService } from './api-products.service'
+import { MetricsModule } from '@app/shared/metrics/metrics.module'
 
 @Module({
 	imports: [
@@ -32,6 +33,7 @@ import { ApiProductsService } from './api-products.service'
 				signOptions: { expiresIn: configService.get<string>('JWT_ACCESS_EXPIRATION') || '15m' },
 			}),
 		}),
+		MetricsModule,
 	],
 	controllers: [ApiProductsController],
 	providers: [ApiProductsService, { provide: 'APP_GUARD', useClass: RolesGuard }],

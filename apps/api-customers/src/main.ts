@@ -36,7 +36,8 @@ async function bootstrap() {
 	)
 
 	await app.startAllMicroservices()
-	await app.listen(process.env.MS_API_CUSTOMERS_PORT)
+	await app.enableShutdownHooks()
+	await app.listen(process.env.MS_API_CUSTOMERS_PORT, '0.0.0.0')
 }
 
 bootstrap()
