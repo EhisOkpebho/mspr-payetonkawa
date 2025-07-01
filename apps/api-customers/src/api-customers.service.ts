@@ -13,6 +13,8 @@ export class ApiCustomersService {
 	constructor(
 		@InjectRepository(Customer)
 		private readonly customerRepository: Repository<Customer>,
+		@InjectRepository(User)
+		private readonly userRepository: Repository<User>,
 		private readonly rolesService: RolesService,
 	) {}
 
@@ -48,6 +50,23 @@ export class ApiCustomersService {
 			throw new ForbiddenException('Not allowed to delete this customer')
 		}
 		await this.findById(id)
+		const customerWithUser = await this.customerRepository.findOne({
+			where: { id },
+			relations: ['user'],
+		})
+
+		if (customerWithUser && customerWithUser.user) {
+			const userId = customerWithUser.user.id
+
+			await this.userRepository.update(userId, { customer: null })
+
+			const userPermissions = await this.rolesService.findPermissionsByUserId(userId)
+			const customerPermission = userPermissions.find((permission) => permission.role.name === 'customer')
+
+			if (customerPermission) {
+				await this.rolesService.deletePermission(customerPermission.id)
+			}
+		}
 		const res = await this.customerRepository.delete(id)
 		return res.affected > 0
 	}
