@@ -4,7 +4,7 @@ import * as client from 'prom-client'
 
 @Controller('metrics')
 export class MetricsController {
-	@Get()
+	@Get('/metrics')
 	async getMetrics(@Res() res: Response): Promise<void> {
 		res.set('Content-Type', client.register.contentType)
 		res.send(await client.register.metrics())
