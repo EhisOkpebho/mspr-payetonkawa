@@ -58,7 +58,7 @@ export class ApiProductsController {
 	@Roles('api_orders', 'admin', 'manager', 'customer')
 	@Get('/:id')
 	findById(@Param('id', ParseIntPipe) id: number, @ReqUser() user: User): Promise<ProductDTO> {
-		// TODO: function prettyUser that returns a string with user info (id, user, mail) if user is undefined, it should be a request from another microservice
+		// TODO: function prettyUser that returns a string with user info (id, user, mail) if user is undefined, it should be a request from another microservice (if id is -1, it should be a request from another microservice, print user.email)
 		this.logger.log(`GET /products/${id} by user ${user.id}`)
 		return this.productsService.findById(id)
 	}

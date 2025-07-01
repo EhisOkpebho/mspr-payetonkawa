@@ -14,11 +14,18 @@ export class ApiOrdersController {
 
 	constructor(private readonly ordersService: ApiOrdersService) {}
 
-	@Roles('admin', 'customer')
+	@Roles('admin', 'distributor', 'customer')
 	@Post()
 	create(@Body() order: CreateOrderDto, @ReqUser() user: User): Promise<Order> {
 		this.logger.log('POST /orders')
 		return this.ordersService.create({ ...order, customerId: user.customer ? user.customer.id : null })
+	}
+
+	@Roles('admin', 'distributor', 'customer')
+	@Get('me')
+	findMyOrders(@ReqUser() user: User): Promise<Order[]> {
+		this.logger.log(`GET /orders/me for user ${user.id}`)
+		return this.ordersService.findByCustomerId(user.customer ? user.customer.id : null)
 	}
 
 	@Roles('admin', 'manager')
@@ -28,7 +35,7 @@ export class ApiOrdersController {
 		return this.ordersService.findAll()
 	}
 
-	@Roles('admin', 'manager', 'customer')
+	@Roles('admin', 'manager')
 	@Get('/:id')
 	findById(@Param('id', ParseIntPipe) id: number): Promise<Order> {
 		this.logger.log(`GET /orders/${id}`)

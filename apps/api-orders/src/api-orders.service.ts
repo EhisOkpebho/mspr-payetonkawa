@@ -20,34 +20,6 @@ export class ApiOrdersService {
 		private readonly httpService: HttpService,
 	) {}
 
-	// async create(dto: CreateOrderDto): Promise<Order> {
-	// 	const order = await this.orderRepository.save(dto)
-	// 	await lastValueFrom(this.productsClient.emit('order.created', { order }))
-	// 	return order
-	// }
-
-	// async create(dto: CreateOrderDto): Promise<Order> {
-	// 	const trustKey = this.configService.get<string>('MS_API_ORDERS_TRUST_KEY')
-	// 	const servicePort = this.configService.get<string>('MS_API_PRODUCTS_PORT') || '3002'
-	//
-	// 	const response = await lastValueFrom(
-	// 		this.httpService.get<ProductDTO>(`http://localhost:${servicePort}/products/${dto.productId}`, {
-	// 			headers: {
-	// 				MS_TRUST_ID: 'api_orders',
-	// 				MS_TRUST_KEY: trustKey,
-	// 			},
-	// 		}),
-	// 	)
-	// 	const product = response.data
-	// 	if (!product) throw new NotFoundException(`Product ${dto.productId} not found`)
-	// 	if (product.stock < dto.quantity) {
-	// 		throw new BadRequestException(`Insufficient stock for product ${dto.productId} (remaining: ${product.stock})`)
-	// 	}
-	// 	const order = await this.orderRepository.save(dto)
-	// 	await lastValueFrom(this.productsClient.emit('order.created', { order }))
-	// 	return order
-	// }
-
 	async create(dto: CreateOrderDto): Promise<Order> {
 		if (!dto.customerId) {
 			throw new ForbiddenException('User does not have a customer profile')
@@ -88,6 +60,14 @@ export class ApiOrdersService {
 		lastValueFrom(this.productsClient.emit('order.created', { order }))
 
 		return order
+	}
+
+	async findByCustomerId(customerId: number): Promise<Order[]> {
+		if (!customerId) {
+			throw new BadRequestException('Customer ID is required')
+		}
+
+		return await this.orderRepository.find({ where: { customerId } })
 	}
 
 	async findAll(): Promise<Order[]> {
