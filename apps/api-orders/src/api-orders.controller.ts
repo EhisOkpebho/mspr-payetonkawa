@@ -4,7 +4,8 @@ import { AuthGuard } from '@app/shared/_guards/auth.guard'
 import { Order } from '@app/shared/entities/order.entity'
 import { User } from '@app/shared/entities/user.entity'
 import { CreateOrderDto } from '@app/shared/types/dto/order.dto'
-import { Body, Controller, Get, Logger, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Logger, Param, ParseIntPipe, Post, Res, UseGuards } from '@nestjs/common'
+import { Response } from 'express'
 import { ApiOrdersService } from './api-orders.service'
 
 import { InjectMetric } from '@willsoto/nestjs-prometheus'
@@ -23,7 +24,7 @@ export class ApiOrdersController {
 
 	@Roles('admin', 'distributor', 'customer')
 	@Post()
-	async create(@Body() order: CreateOrderDto, @ReqUser() user: User): Promise<Order> {
+	async create(@Body() order: CreateOrderDto, @ReqUser() user: User, @Res() res: Response): Promise<void> {
 		this.logger.log('POST /orders')
 		const end = this.requestDuration.startTimer({ method: 'POST', route: '/orders' })
 		try {
@@ -34,6 +35,15 @@ export class ApiOrdersController {
 			end({ status: '500' })
 			throw e
 		}
+		const pdfBuffer = await this.ordersService.create(order, user.customer)
+
+		res.set({
+			'Content-Type': 'application/pdf',
+			'Content-Disposition': 'attachment; filename="commande.pdf"',
+			'Content-Length': pdfBuffer.length,
+		})
+
+		res.send(pdfBuffer)
 	}
 
 	@Roles('admin', 'distributor', 'customer')
