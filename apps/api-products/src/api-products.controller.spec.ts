@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { ApiProductsController } from './api-products.controller'
 import { ApiProductsService } from './api-products.service'
 import { ProductDTO, CreateProductDTO, UpdateProductDTO } from '@app/shared/types/dto/product.dto'
 import { Order } from '@app/shared/entities/order.entity'
 import { User } from '@app/shared/entities/user.entity'
 import { Customer } from '@app/shared/entities/customer.entity'
+import { ApiProductsController } from './api-products.controller'
 
 describe('ApiProductsController', () => {
 	let controller: ApiProductsController
@@ -48,6 +48,12 @@ describe('ApiProductsController', () => {
 				{
 					provide: ApiProductsService,
 					useValue: serviceMock,
+				},
+				{
+					provide: 'PROM_METRIC_HTTP_REQUEST_DURATION_SECONDS',
+					useValue: {
+						startTimer: () => () => {}, // mock startTimer returning a no-op end function
+					},
 				},
 			],
 		}).compile()

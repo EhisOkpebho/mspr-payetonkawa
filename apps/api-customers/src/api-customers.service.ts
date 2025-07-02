@@ -4,9 +4,9 @@ import { CreateCustomerDTO, CustomerDTO, UpdateCustomerDTO } from '@app/shared/t
 import { hasRole } from '@app/shared/utils/roles.utils'
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { RolesService } from 'apps/api-customers/src/roles/roles.service'
 import { Repository } from 'typeorm'
 import { toCustomerDTO, toCustomerEntity } from './api-customers.mapper'
+import { RolesService } from './roles/roles.service'
 
 @Injectable()
 export class ApiCustomersService {

@@ -10,6 +10,7 @@ import { ClientProxy } from '@nestjs/microservices'
 import { BadRequestException, NotFoundException } from '@nestjs/common'
 import { AxiosResponse } from 'axios'
 import { CreateOrderDto } from '@app/shared/types/dto/order.dto'
+import { Customer } from '@app/shared/entities/customer.entity'
 
 describe('ApiOrdersService', () => {
 	let service: ApiOrdersService
@@ -26,16 +27,50 @@ describe('ApiOrdersService', () => {
 	}
 
 	const mockCreateDto: CreateOrderDto = {
-		customerId: 1,
 		productId: 1,
 		quantity: 2,
+	}
+
+	const mockCustomer: Customer = {
+		id: 1,
+		name: 'DOE',
+		username: 'JohnDoe123',
+		firstName: 'John',
+		lastName: 'DOE',
+		postalCode: '59000',
+		city: 'Lille',
+		companyName: 'EPSI',
+		user: {
+			id: 1,
+			email: 'john.doe@epsi.net',
+			password: 'johndoepassword',
+			customer: {} as Customer,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		},
+		createdAt: new Date(),
+		updatedAt: new Date(),
 	}
 
 	const mockProduct = {
 		id: 1,
 		name: 'Test Product',
-		price: 10,
 		stock: 5,
+		details: {
+			price: 10,
+		},
+	}
+
+	const mockHttpService = {
+		get: jest.fn().mockReturnValue(
+			of({
+				data: { id: 'prod-123', name: 'Product A', details: { price: 50 } },
+				status: 200,
+				statusText: 'OK',
+				headers: {},
+				config: {},
+			}),
+		),
 	}
 
 	beforeEach(async () => {
@@ -72,6 +107,10 @@ describe('ApiOrdersService', () => {
 						emit: jest.fn().mockReturnValue(of(true)),
 					},
 				},
+				{
+					provide: HttpService,
+					useValue: mockHttpService,
+				},
 			],
 		}).compile()
 
@@ -84,7 +123,14 @@ describe('ApiOrdersService', () => {
 	describe('create', () => {
 		it('should create an order successfully', async () => {
 			const axiosResponse: AxiosResponse = {
-				data: mockProduct,
+				data: {
+					id: 1,
+					name: 'Test Product',
+					stock: 10,
+					details: {
+						price: 50,
+					},
+				},
 				status: 200,
 				statusText: 'OK',
 				headers: {},
@@ -95,35 +141,37 @@ describe('ApiOrdersService', () => {
 
 			jest.spyOn(httpService, 'get').mockReturnValue(of(axiosResponse))
 
-			const result = await service.create(mockCreateDto)
+			const result = await service.create(mockCreateDto, mockCustomer)
 
-			expect(result).toEqual(mockOrder)
-			expect(orderRepository.save).toHaveBeenCalledWith(mockCreateDto)
-			expect(productsClient.emit).toHaveBeenCalled()
+			expect(result).toBeInstanceOf(Buffer)
+			expect(result.toString('utf8').startsWith('%PDF')).toBe(true)
+
+			expect(orderRepository.save).toHaveBeenCalledWith({ ...mockCreateDto, customerId: mockCustomer.id })
+			expect(productsClient.emit).toHaveBeenCalledWith('order.created', { order: mockOrder })
 		})
 
 		it('should throw NotFoundException if product not found (404)', async () => {
 			jest.spyOn(httpService, 'get').mockReturnValue(throwError(() => ({ response: { status: 404 } })))
 
-			await expect(service.create(mockCreateDto)).rejects.toThrow(NotFoundException)
+			await expect(service.create(mockCreateDto, mockCustomer)).rejects.toThrow(NotFoundException)
 		})
 
 		it('should throw BadRequestException if product service error', async () => {
 			jest.spyOn(httpService, 'get').mockReturnValue(throwError(() => ({ response: { status: 500 } })))
 
-			await expect(service.create(mockCreateDto)).rejects.toThrow(BadRequestException)
+			await expect(service.create(mockCreateDto, mockCustomer)).rejects.toThrow(BadRequestException)
 		})
 
 		it('should throw BadRequestException if product service unreachable', async () => {
 			jest.spyOn(httpService, 'get').mockReturnValue(throwError(() => ({ request: {} })))
 
-			await expect(service.create(mockCreateDto)).rejects.toThrow(BadRequestException)
+			await expect(service.create(mockCreateDto, mockCustomer)).rejects.toThrow(BadRequestException)
 		})
 
 		it('should throw BadRequestException on unexpected error', async () => {
 			jest.spyOn(httpService, 'get').mockReturnValue(throwError(() => ({})))
 
-			await expect(service.create(mockCreateDto)).rejects.toThrow(BadRequestException)
+			await expect(service.create(mockCreateDto, mockCustomer)).rejects.toThrow(BadRequestException)
 		})
 
 		it('should throw BadRequestException if insufficient stock', async () => {
@@ -140,7 +188,7 @@ describe('ApiOrdersService', () => {
 
 			jest.spyOn(httpService, 'get').mockReturnValue(of(axiosResponse))
 
-			await expect(service.create(mockCreateDto)).rejects.toThrow(BadRequestException)
+			await expect(service.create(mockCreateDto, mockCustomer)).rejects.toThrow(BadRequestException)
 		})
 	})
 
