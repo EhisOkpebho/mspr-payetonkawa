@@ -2,7 +2,7 @@ name: CI for Microservices
 
 on:
   push:
-    branches: [main]
+    branches: [ '*' ]
   pull_request:
 
 jobs:
@@ -30,6 +30,22 @@ jobs:
       - name: Build api-products
         run: npm run build:api-products
 
-      # Tu peux ajouter des tests ici :
-      # - name: Run tests
+      # - name: Run unit tests
       #   run: npm run test
+
+      - name: Load .env file
+        run: echo "${{ secrets.DOTENV_FILE }}" > .env
+
+      - name: Prepare for e2e tests
+        run: docker compose up -d && docker stop api_customers && docker stop api_orders && docker stop api_products && docker ps
+
+      - name: Start APIs in background
+        run: |
+          npm run start:all &
+          echo $! > pid.txt
+
+      - name: Wait for services to be ready
+        run: npx wait-on --config waitOnConfig.js
+
+      - name: Run e2e tests
+        run: cd e2e && npm i && npm run test
