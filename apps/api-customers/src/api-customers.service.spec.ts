@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { ApiCustomersService } from './api-customers.service'
 import { getRepositoryToken } from '@nestjs/typeorm'
 import { Customer } from '@app/shared/entities/customer.entity'
 import { User } from '@app/shared/entities/user.entity'
 import { Repository } from 'typeorm'
 import { ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common'
 import { CreateCustomerDTO } from '@app/shared/types/dto/customer.dto'
+import { ApiCustomersService } from './api-customers.service'
+import { RolesService } from './roles/roles.service'
 
 const mockRepository = () => ({
 	save: jest.fn(),
@@ -45,6 +46,12 @@ describe('ApiCustomersService', () => {
 		customer: mockCustomer,
 	}
 
+	const mockRolesService = () => ({
+		createPermission: jest.fn(),
+		findPermissionsByUserId: jest.fn(),
+		deletePermission: jest.fn(),
+	})
+
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -52,6 +59,14 @@ describe('ApiCustomersService', () => {
 				{
 					provide: getRepositoryToken(Customer),
 					useFactory: mockRepository,
+				},
+				{
+					provide: getRepositoryToken(User),
+					useFactory: mockRepository,
+				},
+				{
+					provide: RolesService,
+					useFactory: mockRolesService,
 				},
 			],
 		}).compile()

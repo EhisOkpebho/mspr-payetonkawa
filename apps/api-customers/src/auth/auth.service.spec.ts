@@ -7,14 +7,13 @@ import { User } from '@app/shared/entities/user.entity'
 import { Repository } from 'typeorm'
 import { ConflictException, UnauthorizedException } from '@nestjs/common'
 import { RolesService } from '../roles/roles.service'
-import * as bcrypt from 'bcrypt'
+import * as argon2 from 'argon2'
 
 describe('AuthService', () => {
 	let service: AuthService
 	let userRepository: jest.Mocked<Repository<User>>
 	let rolesService: RolesService
 	let jwtService: JwtService
-	let configService: ConfigService
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -60,7 +59,6 @@ describe('AuthService', () => {
 		userRepository = module.get(getRepositoryToken(User))
 		rolesService = module.get(RolesService)
 		jwtService = module.get(JwtService)
-		configService = module.get(ConfigService)
 	})
 
 	describe('signUp', () => {
@@ -122,7 +120,6 @@ describe('AuthService', () => {
 				new UnauthorizedException('Invalid credentials'),
 			)
 		})
-
 	})
 
 	describe('refreshToken', () => {
@@ -151,7 +148,7 @@ describe('AuthService', () => {
 
 		it('should compare passwords correctly', async () => {
 			const password = 'mypassword'
-			const hash = await bcrypt.hash(password, 10)
+			const hash = await argon2.hash(password)
 			const isMatch = await service.comparePassword(password, hash)
 			expect(isMatch).toBe(true)
 		})

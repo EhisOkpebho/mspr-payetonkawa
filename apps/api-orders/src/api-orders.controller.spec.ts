@@ -26,7 +26,15 @@ describe('ApiOrdersController', () => {
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [ApiOrdersController],
-			providers: [{ provide: ApiOrdersService, useValue: mockService }],
+			providers: [
+				{ provide: ApiOrdersService, useValue: mockService },
+				{
+					provide: 'PROM_METRIC_HTTP_REQUEST_DURATION_SECONDS',
+					useValue: {
+						startTimer: () => () => {}, // mock startTimer returning a no-op end function
+					},
+				},
+			],
 		}).compile()
 
 		controller = module.get<ApiOrdersController>(ApiOrdersController)
@@ -36,28 +44,42 @@ describe('ApiOrdersController', () => {
 	})
 
 	describe('create()', () => {
-		it('should call ordersService.create with merged order and user ID', async () => {
+		it('should call ordersService.create and return a PDF response', async () => {
 			const dto: CreateOrderDto = {
 				productId: 456,
 				quantity: 1,
-				customerId: 123,
 			}
 
 			const user: User = {
 				id: 123,
 				email: 'test@example.com',
 				password: '',
-				customer: null,
+				customer: { id: 123 } as any, // simulate linked customer
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				roles: ['customer'],
 			}
 
-			mockService.create.mockResolvedValue(mockOrder)
+			const mockPdfBuffer = Buffer.from('PDF-DATA')
+			mockService.create.mockResolvedValue(mockPdfBuffer)
 
-			const result = await controller.create(dto, user)
-			expect(result).toEqual(mockOrder)
-			expect(service.create).toHaveBeenCalledWith({ ...dto, customerId: user.id })
+			// Mock Express Response object
+			const mockRes = {
+				set: jest.fn(),
+				send: jest.fn(),
+			} as any
+
+			await controller.create(dto, user, mockRes)
+
+			expect(mockService.create).toHaveBeenCalledWith(dto, user.customer)
+			expect(mockRes.set).toHaveBeenCalledWith(
+				expect.objectContaining({
+					'Content-Type': 'application/pdf',
+					'Content-Disposition': 'attachment; filename="commande.pdf"',
+					'Content-Length': mockPdfBuffer.length,
+				}),
+			)
+			expect(mockRes.send).toHaveBeenCalledWith(mockPdfBuffer)
 		})
 	})
 
